@@ -17,4 +17,4 @@ docker rm $CONTAINER_NAME 2>/dev/null
 docker build -t $IMAGE_NAME .
 
 # Run the Docker container
-docker run -d --name $CONTAINER_NAME -p 8000:8000 -v $FILE_DIR:/app/uploads malware-thesis-server
+docker run -d --name $CONTAINER_NAME -p 8000:8000 -v $FILE_DIR:/app/uploads $IMAGE_NAME

@@ -167,3 +167,9 @@ log/
 
 # .DS_Store
 .DS_Store
+
+collector/auth.txt
+
+collector/ghidra/
+
+collector/foulplay/

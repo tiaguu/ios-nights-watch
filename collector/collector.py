@@ -6,6 +6,7 @@ import logging
 from disassemble import Disassembler
 import zipfile
 import signal
+import requests
 
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
@@ -80,5 +81,14 @@ for application in applications:
 
         os.remove(ipa_file)
         os.remove(disassembly_file)
+
+        # Open the file in binary mode and send the POST request
+        with open(output_zip, 'rb') as file:
+            files = {'file': file}
+            response = requests.post('http://95.168.166.236:8000/upload', files=files)
+
+        # Print the response from the server
+        print(response.status_code)
+        print(response.text)
     except:
         logging.info(f"FAILED: Could not get application: {application}")

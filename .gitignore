@@ -173,3 +173,5 @@ collector/auth.txt
 collector/ghidra/
 
 collector/foulplay/
+
+collector/decrypted/

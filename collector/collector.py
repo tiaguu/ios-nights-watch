@@ -38,7 +38,7 @@ with open('./dataset/applications_dataset.txt', 'r') as dataset:
 
 logging.info(f"Loaded applications from dataset")
 
-for application in applications:
+for application in applications[1:]:
     try:
         output_name = application.replace(".", "_")
 
@@ -66,9 +66,13 @@ for application in applications:
         # Set the alarm for 600 seconds (10 minutes)
         signal.alarm(600)
 
+        logging.info(f"Disassembling {application}")
+
         ipa_file = f"./decrypted/{output_name}.ipa"
         disassembly_file = f"./decrypted/{output_name}.txt"
         Disassembler().extract_disassembly(input_file = ipa_file, output_file = disassembly_file)
+
+        logging.info(f"{application} disassembled with success")
 
         # Reset the alarm
         signal.alarm(0)
@@ -82,13 +86,21 @@ for application in applications:
         os.remove(ipa_file)
         os.remove(disassembly_file)
 
+        logging.info(f"Uploading {application} to server")
+
         # Open the file in binary mode and send the POST request
         with open(output_zip, 'rb') as file:
             files = {'file': file}
             response = requests.post('http://95.168.166.236:8000/upload', files=files)
 
         # Print the response from the server
-        print(response.status_code)
-        print(response.text)
+        if response.status_code == 200:
+            logging.info(f"Uploaded {application} with success")
+        else:
+            logging.info(f"Failed to upload {application}")
+
+        os.remove(output_zip)
+
+        logging.info(f"Cleaned up {application}")
     except:
         logging.info(f"FAILED: Could not get application: {application}")

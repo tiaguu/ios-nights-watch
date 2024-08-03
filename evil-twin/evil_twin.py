@@ -59,7 +59,7 @@ def main():
 
         logging.info("Obtaining goodware .ipa")
 
-        assigned_dylib_index = number % len(dylib_files)
+        assigned_dylib_index = number % len(dylib_files) if number != 0 else 0
         dylib = dylib_files[assigned_dylib_index]
         dylib_path = os.path.join(dylibs_folder, dylib)
 

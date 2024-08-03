@@ -23,6 +23,19 @@ async def upload_application(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(status_code=400, content={"message": f"Could not upload the file: {e}"})
     
+@app.post("/upload/malware")
+async def upload_malware_application(file: UploadFile = File(...)):
+    try:
+        file_location = f"malware/{file.filename}"  # Save the file to the 'uploads' directory
+        os.makedirs(os.path.dirname(file_location), exist_ok=True)  # Ensure directory exists
+        # Write to file in chunks
+        with open(file_location, "wb+") as file_object:
+            while content := await file.read(1024 * 1024):  # Read in chunks of 1MB
+                file_object.write(content)
+        return {"info": f"file '{file.filename}' saved at '{file_location}'"}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"message": f"Could not upload the file: {e}"})
+    
 @app.get("/download/{number}")
 async def download_goodware(number: int):
     try:

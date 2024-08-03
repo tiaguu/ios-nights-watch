@@ -6,6 +6,7 @@ from disassemble import Disassembler
 import signal
 import logging
 import requests
+import shutil
 
 def main():
     stream_handler = logging.StreamHandler()
@@ -122,7 +123,7 @@ def main():
                 zipf.write(malware_ipa_path, arcname=os.path.basename(malware_ipa_path))
                 zipf.write(malware_txt_path, arcname=os.path.basename(malware_txt_path))
 
-            os.remove(malware_unzip)
+            shutil.rmtree(malware_unzip)
 
             logging.info(f"Uploading {malware_name}")
 

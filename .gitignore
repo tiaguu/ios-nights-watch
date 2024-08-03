@@ -175,3 +175,11 @@ collector/ghidra/
 collector/foulplay/
 
 collector/decrypted/
+
+matrix/
+
+evil-twin/goodware/
+
+evil-twin/dylibs/
+
+evil-twin/malware/

@@ -6,7 +6,6 @@ from disassemble import Disassembler
 import signal
 import logging
 import requests
-import aiohttp
 
 def main():
     stream_handler = logging.StreamHandler()

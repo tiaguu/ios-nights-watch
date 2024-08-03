@@ -32,6 +32,9 @@ class Disassembler():
         library_paths = []
 
         for root, dirs, files in os.walk(extracted_path):
+            for file in files:
+                if file.endswith('.dylib'):
+                    library_paths.append(os.path.join(root, file))
             for directory in dirs:
                 if directory.endswith('.app'):
                     app_dir = os.path.join(root, directory)
@@ -39,9 +42,6 @@ class Disassembler():
                         file_path = os.path.join(app_dir, file)
                         if file == directory[:-4]:  # Check if file is executable
                             binary_path = file_path
-            for file in files:
-                if file.endswith('.dylib'):
-                    library_paths.append(os.path.join(root, file))
 
         return binary_path, library_paths
 

@@ -131,7 +131,7 @@ def main():
             with open(malware_zip, mode='rb') as file:
                 data = {'file': (filename, file, 'application/zip')}
 
-                response = requests.post('http://{server_ip}:8000/upload/malware', files=data)
+                response = requests.post(f'http://{server_ip}:8000/upload/malware', files=data)
 
                 if response.status_code == 200:
                     logging.info(f"{malware_name} uploaded with success")    

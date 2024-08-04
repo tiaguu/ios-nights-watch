@@ -43,15 +43,18 @@ def main():
             dylib_files.append(dylib_file)
 
     malware_instances_number = 136
-    for number in range(malware_instances_number):
+    malware_instances = []
+    dylib_count = 0
+    goodware_count = 0
+    while len(malware_instances) < malware_instances_number:
         logging.info(f"––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
-        logging.info(f"–––––––––––––––––––––––––––––––––––– {number} –––––––––––––––––––––––––––––––––––––––")
+        logging.info(f"–––––––––––––––––––––––––––––––––––– {goodware_count} –––––––––––––––––––––––––––––––––––––––")
         logging.info(f"––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
 
         logging.info("Downloading goodware")
-        download_url = f'http://{server_ip}:8000/download/{number}'
+        download_url = f'http://{server_ip}:8000/download/{goodware_count}'
         with requests.get(download_url, stream=True) as response:
-            goodware_zip_path = os.path.join(malware_folder, f'{number}.zip')
+            goodware_zip_path = os.path.join(malware_folder, f'{goodware_count}.zip')
             with open(goodware_zip_path, 'wb') as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
@@ -60,11 +63,11 @@ def main():
 
         logging.info("Obtaining goodware .ipa")
 
-        assigned_dylib_index = number % len(dylib_files) if number != 0 else 0
+        assigned_dylib_index = goodware_count % len(dylib_files) if goodware_count != 0 else 0
         dylib = dylib_files[assigned_dylib_index]
         dylib_path = os.path.join(dylibs_folder, dylib)
 
-        goodware_unzip = os.path.join(malware_folder, str(number))
+        goodware_unzip = os.path.join(malware_folder, str(goodware_count))
 
         with zipfile.ZipFile(goodware_zip_path, 'r') as zip_ref:
             zip_ref.extractall(goodware_unzip)
@@ -95,49 +98,75 @@ def main():
 
             subprocess.check_output(['./inject/inject', malware_ipa_path, '-d', dylib_path, '--ipa'])
 
-            logging.info("Injected with success")
+            # Check if injection went OK
 
-            def timeout_handler(signum, frame):
-                raise "Function execution exceeded time limit"
+            extracted_path = os.path.splitext(malware_ipa_path)[0]
+            os.makedirs(extracted_path, exist_ok = True)
+            with zipfile.ZipFile(malware_ipa_path, 'r') as ipa_zip:
+                ipa_zip.extractall(extracted_path)
 
-            # Register the signal function handler
-            signal.signal(signal.SIGALRM, timeout_handler)
+            successfully_injected = False
+            for root, dirs, files in os.walk(extracted_path):
+                for file in files:
+                    if file == dylib:
+                        successfully_injected = True
 
-            # Set the alarm for 600 seconds (10 minutes)
-            signal.alarm(600)
+            if not successfully_injected:
+                logging.info("Failed to inject")
+                shutil.rmtree(malware_unzip)
 
-            logging.info(f"Disassembling {malware_name}")
+            else:
+                shutil.rmtree(extracted_path)
+                logging.info("Injected with success")
 
-            malware_txt_path = os.path.join(malware_unzip, f'{malware_name}.txt')
+                def timeout_handler(signum, frame):
+                    raise "Function execution exceeded time limit"
 
-            Disassembler().extract_disassembly(input_file = malware_ipa_path, output_file = malware_txt_path)
+                # Register the signal function handler
+                signal.signal(signal.SIGALRM, timeout_handler)
 
-            logging.info(f"{malware_name} disassembled with success")
+                # Set the alarm for 600 seconds (10 minutes)
+                signal.alarm(600)
 
-            # Reset the alarm
-            signal.alarm(0)
+                logging.info(f"Disassembling {malware_name}")
 
-            # Join disassembly and decrypted .ipa in zip
-            malware_zip = f'{malware_unzip}.zip'
-            with zipfile.ZipFile(malware_zip, 'w') as zipf:
-                zipf.write(malware_ipa_path, arcname=os.path.basename(malware_ipa_path))
-                zipf.write(malware_txt_path, arcname=os.path.basename(malware_txt_path))
+                malware_txt_path = os.path.join(malware_unzip, f'{malware_name}.txt')
 
-            shutil.rmtree(malware_unzip)
+                Disassembler().extract_disassembly(input_file = malware_ipa_path, output_file = malware_txt_path)
 
-            logging.info(f"Uploading {malware_name}")
+                logging.info(f"{malware_name} disassembled with success")
 
-            filename = os.path.basename(malware_zip)
-            with open(malware_zip, mode='rb') as file:
-                data = {'file': (filename, file, 'application/zip')}
+                # Reset the alarm
+                signal.alarm(0)
 
-                response = requests.post(f'http://{server_ip}:8000/upload/malware', files=data)
+                # Join disassembly and decrypted .ipa in zip
+                malware_zip = f'{malware_unzip}.zip'
+                with zipfile.ZipFile(malware_zip, 'w') as zipf:
+                    zipf.write(malware_ipa_path, arcname=os.path.basename(malware_ipa_path))
+                    zipf.write(malware_txt_path, arcname=os.path.basename(malware_txt_path))
 
-                if response.status_code == 200:
-                    logging.info(f"{malware_name} uploaded with success")    
+                shutil.rmtree(malware_unzip)
 
-            os.remove(malware_zip)        
-            logging.info("Cleaned up")
+                logging.info(f"Uploading {malware_name}")
+
+                filename = os.path.basename(malware_zip)
+                with open(malware_zip, mode='rb') as file:
+                    data = {'file': (filename, file, 'application/zip')}
+
+                    response = requests.post(f'http://{server_ip}:8000/upload/malware', files=data)
+
+                    if response.status_code == 200:
+                        malware_instances.append(malware_name)
+                        dylib_count += 1
+                        logging.info(f"{malware_name} uploaded with success")    
+                        logging.info(f"Succesfully processed {len(malware_instances)}")
+                    else:
+                        logging.info("Failed to upload")
+
+                os.remove(malware_zip)        
+                logging.info("Cleaned up")
+        
+        goodware_count += 1
 
 
 if __name__ == "__main__":

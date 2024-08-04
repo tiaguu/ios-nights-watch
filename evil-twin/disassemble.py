@@ -11,7 +11,6 @@ class Disassembler():
             ipa_zip.extractall(extracted_path)
 
         binary_path, library_paths = self.find_binary_and_libraries(extracted_path = extracted_path)
-        
         disassembly = self.disassemble_with_otool(binary_path = binary_path)
         
         for library_path in library_paths:

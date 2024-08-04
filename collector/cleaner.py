@@ -27,9 +27,10 @@ logging.info(f"Running cleaner on folder {dirt_folder}")
 
 for unchecked_file in os.listdir(dirt_folder):
     application, extension = os.path.splitext(unchecked_file)
+    zip_path = os.path.join(dirt_folder, unchecked_file)
     if extension == '.zip':
         with tempfile.TemporaryDirectory() as temp_dir:
-            with zipfile.ZipFile(unchecked_file, 'r') as zip_ref:
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(temp_dir)
 
             for temp_file in os.listdir(temp_dir):

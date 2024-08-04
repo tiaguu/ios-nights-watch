@@ -34,11 +34,12 @@ for unchecked_file in os.listdir(dirt_folder):
 
             for temp_file in os.listdir(temp_dir):
                 temp_root, temp_extension = os.path.splitext(temp_file)
+                file_path = os.path.join(temp_dir, temp_file)
                 if temp_extension == '.txt':
                     with open(file_path, 'r') as file:
                         content = file.read()
                         lines = content.splitlines()
-                        if line_count < 300:
+                        if len(lines) < 300:
                             logging.info(f"––––––––––––––––––––––––––––––––––")
                             logging.info(f"Application: {application}")
                             logging.info(f"Lines: {len(lines)}")

@@ -39,7 +39,18 @@ async def upload_malware_application(file: UploadFile = File(...)):
 @app.get("/download/{number}")
 async def download_goodware(number: int):
     try:
-        files_dir = "uploads"
+        files_dir = "goodware"
+        files = os.listdir(files_dir)
+        alphabetical_files = sorted(files)
+        download_path = os.path.join(files_dir, alphabetical_files[number])
+        return FileResponse(download_path, media_type='application/zip', filename=alphabetical_files[number])
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"message": f"Could not download the file: {e}"})
+    
+@app.get("/download/malware/{number}")
+async def download_malware(number: int):
+    try:
+        files_dir = "malware"
         files = os.listdir(files_dir)
         alphabetical_files = sorted(files)
         download_path = os.path.join(files_dir, alphabetical_files[number])

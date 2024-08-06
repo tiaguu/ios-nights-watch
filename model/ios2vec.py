@@ -47,7 +47,7 @@ def main():
         file_vocabulary = process_file(malware_folder, file)
         vocabulary.extend(file_vocabulary)
 
-    word2vec_model = Word2Vec(sentences=vocabulary, vector_size=100, window=10, min_count=1, workers=8) # For workers on linux use: nproc
+    word2vec_model = Word2Vec(sentences=vocabulary, vector_size=100, window=10, min_count=1, workers=32) # For workers on linux use: nproc
     word2vec_model.save("word2vec_disassembly.model")    
     
 

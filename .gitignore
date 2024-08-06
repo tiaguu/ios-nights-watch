@@ -185,3 +185,7 @@ evil-twin/dylibs/
 evil-twin/malware/
 
 evil-twin/Payload/
+
+model/goodware/
+
+model/malware/

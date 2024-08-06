@@ -39,11 +39,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("goodware_folder", type=str, help="The folder with goodware files")
     parser.add_argument("malware_folder", type=str, help="The folder with malware files")
+    parser.add_argument("model_folder", type=str, help="The folder with model files")
 
     args = parser.parse_args()
 
     goodware_folder = args.goodware_folder    
     malware_folder = args.malware_folder
+    model_folder = args.model_folder
 
     if not os.path.isdir(goodware_folder):
         print(f"Error: Path '{goodware_folder}' is not a valid directory.")
@@ -52,12 +54,15 @@ def main():
     if not os.path.isdir(malware_folder):
         print(f"Error: Path '{malware_folder}' is not a valid directory.")
         return
+    
+    if not os.path.isdir(model_folder):
+        print(f"Error: Path '{model_folder}' is not a valid directory.")
+        return
 
     corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
     word2vec_model = Word2Vec(corpus, vector_size=100, window=10, min_count=1, workers=32) # For workers on linux use: nproc
 
-    word2vec_model.save("ios2vec.model")    
-    
+    word2vec_model.save(os.path.join(model_folder, "ios2vec.model"))    
 
 def process_file(path, file):
     application, extension = os.path.splitext(file)

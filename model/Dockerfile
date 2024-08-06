@@ -15,4 +15,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "ios2vec.py", "/app/goodware", "/app/malware"]
+CMD ["python", "ios2vec.py", "/app/goodware", "/app/malware", "/app/model"]

@@ -6,6 +6,26 @@ import zipfile
 from gensim.models import Word2Vec
 from preprocess import Preprocessor
 
+class iOSCorpus:
+    def __init__(self, goodware_folder, malware_folder):
+        self.files = []
+        
+        goodware_files = os.listdir(goodware_folder)
+        for file in goodware_files:
+            self.files.append((file, os.path.join(goodware_folder, file)))
+
+        malware_files = os.listdir(malware_folder)
+        for file in malware_files:
+            self.files.append((file, os.path.join(malware_folder, file)))
+        
+
+    def __iter__(self):
+        for (file, path) in self.files:
+            logging.info(f'Processing file: {file}')
+            file_vocabulary = process_file(path, file)
+            for line in file_vocabulary:
+                yield line
+
 def main():
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
@@ -32,31 +52,18 @@ def main():
     if not os.path.isdir(malware_folder):
         print(f"Error: Path '{malware_folder}' is not a valid directory.")
         return
-    
-    vocabulary = []
 
-    goodware_files = os.listdir(goodware_folder)
-    for file in goodware_files:
-        logging.info(f'Processing file: {file}')
-        file_vocabulary = process_file(goodware_folder, file)
-        vocabulary.extend(file_vocabulary)
+    corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
+    word2vec_model = Word2Vec(corpus, vector_size=100, window=10, min_count=1, workers=32) # For workers on linux use: nproc
 
-    malware_files = os.listdir(malware_folder)
-    for file in malware_files:
-        logging.info(f'Processing file: {file}')
-        file_vocabulary = process_file(malware_folder, file)
-        vocabulary.extend(file_vocabulary)
-
-    word2vec_model = Word2Vec(sentences=vocabulary, vector_size=100, window=10, min_count=1, workers=32) # For workers on linux use: nproc
-    word2vec_model.save("word2vec_disassembly.model")    
+    word2vec_model.save("ios2vec.model")    
     
 
-def process_file(folder, file):
+def process_file(path, file):
     application, extension = os.path.splitext(file)
-    zip_path = os.path.join(folder, file)
     if extension == '.zip':
         with tempfile.TemporaryDirectory() as temp_dir:
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            with zipfile.ZipFile(path, 'r') as zip_ref:
                 zip_ref.extractall(temp_dir)
 
             for temp_file in os.listdir(temp_dir):

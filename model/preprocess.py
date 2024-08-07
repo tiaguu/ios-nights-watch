@@ -135,12 +135,16 @@ class Preprocessor():
                         if len(instruction) > 3:
                             arguments = instruction[3].split('@')[0].split(';')[0].rstrip()
                             arguments = self.split_ignoring_parentheses(instruction = arguments)
+                        else:
+                            arguments = []
                     else:
                         address = instruction[0]
                         operation = instruction[1]
                         if len(instruction) > 2:
                             arguments = instruction[2].split('@')[0].split(';')[0].rstrip()
                             arguments = self.split_ignoring_parentheses(instruction = arguments)
+                        else:
+                            arguments = []
 
                     instruction_tokenized = []
                     instruction_tokenized.append(operation)
@@ -152,5 +156,3 @@ class Preprocessor():
                 pass
         
         return final
-
-    

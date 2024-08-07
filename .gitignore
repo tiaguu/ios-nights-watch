@@ -189,3 +189,5 @@ evil-twin/Payload/
 model/goodware/
 
 model/malware/
+
+model/ios2vec.model*

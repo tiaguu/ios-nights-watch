@@ -191,3 +191,9 @@ model/goodware/
 model/malware/
 
 model/ios2vec.model*
+
+learning/goodware/
+
+learning/malware/
+
+learning/ios2vec/

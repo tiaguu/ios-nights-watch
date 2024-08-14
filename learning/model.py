@@ -7,8 +7,8 @@ from preprocess import Preprocessor
 from gensim.models import Word2Vec
 import numpy as np
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
+# from keras.models import Sequential
+# from keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 def main():
@@ -61,16 +61,16 @@ def main():
     # Define LSTM model
     max_length = 5  # Define the maximum length of sequences
 
-    model = Sequential()
-    model.add(LSTM(64, input_shape=(None, max_length, ios2vec_model.vector_size), return_sequences=True))
-    model.add(LSTM(64))
-    model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
+    # model = Sequential()
+    # model.add(LSTM(64, input_shape=(None, max_length, ios2vec_model.vector_size), return_sequences=True))
+    # model.add(LSTM(64))
+    # model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
 
-    logging.info(f'Defined the model')
+    # logging.info(f'Defined the model')
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    logging.info(f'Compiled the model')
+    # logging.info(f'Compiled the model')
 
     # Incremental training setup
     batch_size = 1
@@ -84,14 +84,14 @@ def main():
             file_path_and_label = train_paths[i]
             X_train, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
             logging.info(f'Generated batch embeddings')
-            model.train_on_batch(X_train, y_train)
+            # model.train_on_batch(X_train, y_train)
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
 
     # Evaluate the model
-    X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
-    loss, accuracy = model.evaluate(X_test, y_test)
-    print(f'Accuracy: {accuracy * 100:.2f}%')
+    # X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
+    # loss, accuracy = model.evaluate(X_test, y_test)
+    # print(f'Accuracy: {accuracy * 100:.2f}%')
 
 
 def generate_embeddings_file(file_path_and_label, model, max_length):

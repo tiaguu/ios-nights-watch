@@ -11,11 +11,11 @@ class iOSCorpus:
         self.files = []
         
         goodware_files = os.listdir(goodware_folder)
-        for file in [goodware_files[1]]:
+        for file in goodware_files:
             self.files.append((file, os.path.join(goodware_folder, file)))
 
         malware_files = os.listdir(malware_folder)
-        for file in [malware_files[1]]:
+        for file in malware_files:
             self.files.append((file, os.path.join(malware_folder, file)))
         
 
@@ -60,7 +60,7 @@ def main():
         return
 
     corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
-    word2vec_model = Word2Vec(corpus, vector_size=100, window=5, min_count=1, workers=8, epochs=1) # For workers on linux use: nproc
+    word2vec_model = Word2Vec(corpus, vector_size=100, window=5, min_count=1, workers=32, epochs=1) # For workers on linux use: nproc
 
     word2vec_model.save(os.path.join(model_folder, "ios2vec.model"))    
 

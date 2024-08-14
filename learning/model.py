@@ -28,7 +28,7 @@ def main():
 
     args = parser.parse_args()
 
-    goodware_folder = args.goodware_folder    
+    goodware_folder = args.goodware_folder
     malware_folder = args.malware_folder
     ios2vec_folder = args.ios2vec_folder
 
@@ -46,7 +46,7 @@ def main():
         file_paths_and_labels.append(file_labeled)
 
     malware_files = os.listdir(malware_folder)[:10]
-    for file in os.listdir(malware_folder):
+    for file in malware_files:
         filepath = os.path.join(malware_folder, file)
         file_labeled = (filepath, 1)
         file_paths_and_labels.append(file_labeled)
@@ -62,7 +62,7 @@ def main():
     max_length = 5  # Define the maximum length of sequences
 
     model = Sequential()
-    model.add(LSTM(64, input_shape=(max_length, ios2vec_model.vector_size), return_sequences=True))
+    model.add(LSTM(64, input_shape=(None, max_length, ios2vec_model.vector_size), return_sequences=True))
     model.add(LSTM(64))
     model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
 
@@ -73,50 +73,49 @@ def main():
     logging.info(f'Compiled the model')
 
     # Incremental training setup
-    batch_size = 2
+    batch_size = 1
     num_epochs = 1
 
     for epoch in range(num_epochs):
         logging.info(f'Running epoch {epoch + 1}')
         np.random.shuffle(train_paths)  # Shuffle training data each epoch
-        for i in range(0, len(train_paths), batch_size):
+        for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
-            batch_paths = train_paths[i:i + batch_size]
-            X_train, y_train = generate_embeddings_batch(batch_paths, ios2vec_model)
+            file_path_and_label = train_paths[i]
+            X_train, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
             logging.info(f'Generated batch embeddings')
-            X_train_padded = pad_sequences(X_train, maxlen=max_length, dtype='float32', padding='post')
-            logging.info(f'Padded training sequences')
-            model.train_on_batch(X_train_padded, y_train)
+            model.train_on_batch(X_train, y_train)
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
 
     # Evaluate the model
-    X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model)
-    X_test_padded = pad_sequences(X_test, maxlen=max_length, dtype='float32', padding='post')
-    loss, accuracy = model.evaluate(X_test_padded, y_test)
+    X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
+    loss, accuracy = model.evaluate(X_test, y_test)
     print(f'Accuracy: {accuracy * 100:.2f}%')
 
 
-def generate_embeddings_batch(file_paths_and_labels, model):
-    embeddings = []
+def generate_embeddings_file(file_path_and_label, model, max_length):
     labels = []
-    for file_path, label in file_paths_and_labels:
-        app_tokenized_instructions = process_file(file_path)
-        app_embedding = generate_embedding_for_app(app_tokenized_instructions, model)
-        embeddings.append(app_embedding)
-        labels.append(label)
+    file_path, label = file_path_and_label
+    app_tokenized_instructions = process_file(file_path)
+    embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length)
+    logging.info(f'embeddings shape: {embeddings.shape}')
+    labels.append(label)
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
     embeddings = []
     for instruction in app_tokenized_instructions:
+        sequence_embedding = []
         for token in instruction:
             if token in model.wv:
-                embeddings.append(model.wv[token])
-    if embeddings:
-        return np.mean(embeddings, axis=0)
-    else:
-        return np.zeros(model.vector_size)
+                sequence_embedding.append(model.wv[token])
+            else:
+                sequence_embedding.append(np.zeros(model.vector_size))
+        embeddings.append(sequence_embedding)
+    logging.info(f'embeddings shape: ({len(embeddings)}, {len(embeddings[0])}')
+    embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
+    return embedded_instructions_padded
 
 def process_file(path):
     application, extension = os.path.splitext(os.path.basename(path))

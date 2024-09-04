@@ -1,9 +1,0 @@
-#!/bin/bash
-
-brew tap majd/repo
-brew install ipatool
-brew install hudochenkov/sshpass/sshpass
-brew install ldid
-brew install ifuse
-brew install libimobiledevice
-brew install usbmuxd

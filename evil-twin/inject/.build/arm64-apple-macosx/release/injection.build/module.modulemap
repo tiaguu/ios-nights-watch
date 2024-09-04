@@ -1,4 +1,0 @@
-module injection {
-    header "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/injection-Swift.h"
-    requires objc
-}

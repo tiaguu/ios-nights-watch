@@ -1,0 +1,7 @@
+version: "Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)"
+options: "0ed577066a7fa50492d07d81e0a2f65ecf04f0b8e101f3e2334af59fb22b25cb"
+build_start_time: [1721467620, 536394000]
+build_end_time: [1721467621, 117698000]
+inputs:
+  ? "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParserToolInfo/ToolInfo.swift"
+  : [1721467619, 917470105]

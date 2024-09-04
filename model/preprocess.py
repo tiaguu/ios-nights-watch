@@ -124,6 +124,18 @@ class Preprocessor():
     def clean_assembly(self, input):
         final = []
         lines = input.split('\n')
+        operation_list = []
+        ignore_opcodes = {'.long', 'nop', 'adr', 'adrp', 'tbl', 'tbx', 'dup', 'zip1', 
+                          'zip2', 'trn1', 'trn2', 'uzp1', 'uzp2', 'ld1', 'ld2', 'ld3', 
+                          'ld4', 'st1', 'st2', 'st3', 'st4', 'rbit', 'rev', 'rev16', 
+                          'rev32', 'rev64', 'fmov', 'fcvt', 'fcvtas', 'fcvtn', 'fcvtms', 
+                          'fcvtpu', 'fcvtzu', 'fabs', 'fneg', 'sqxtn', 'sqxtn2', 'uqxtn', 
+                          'uqxtn2', 'sqxtun', 'sqxtun2', 'addp', 'faddp', 'cmle', 'cmge', 
+                          'cmeq', 'cmgt', 'cmhi', 'cmhs', 'cnt', 'aesd', 'aese', 'aesimc'}
+        
+        # Prepare a tuple for faster lookup with str.startswith()
+        ignore_opcodes_tuple = tuple(ignore_opcodes)
+        
         for line in lines:
             instruction = line.split('\t')
             if self.is_address(instruction[0]):
@@ -146,12 +158,17 @@ class Preprocessor():
                         else:
                             arguments = []
 
-                    instruction_tokenized = []
-                    instruction_tokenized.append(operation)
-                    for argument in arguments:
-                        instruction_tokenized.append(argument)
-                        
-                    final.append(instruction_tokenized)
+                    # Use str.startswith() with the tuple of ignore opcodes
+                    if not operation.startswith(ignore_opcodes_tuple):
+                        instruction_tokenized = []
+                        instruction_tokenized.append(operation)
+                        if operation not in operation_list:
+                            operation_list.append(operation)
+
+                        for argument in arguments:
+                            instruction_tokenized.append(argument)
+                            
+                        final.append(' '.join(instruction_tokenized))
             else:
                 pass
         

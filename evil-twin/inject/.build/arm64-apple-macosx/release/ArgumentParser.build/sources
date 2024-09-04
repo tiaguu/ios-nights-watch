@@ -1,0 +1,41 @@
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Completions/BashCompletionsGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Completions/CompletionsGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Completions/FishCompletionsGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Completions/ZshCompletionsGenerator.swift
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/Argument.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/ArgumentHelp.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/ArgumentVisibility.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/CompletionKind.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/Errors.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/Flag.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/NameSpecification.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/Option.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Properties/OptionGroup.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/AsyncParsableCommand.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/CommandConfiguration.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/EnumerableFlag.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/ExpressibleByArgument.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/ParsableArguments.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/ParsableArgumentsValidation.swift'
+'/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsable Types/ParsableCommand.swift'
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/ArgumentDecoder.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/ArgumentDefinition.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/ArgumentSet.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/CommandParser.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/InputKey.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/InputOrigin.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/Name.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/Parsed.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/ParsedValues.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/ParserError.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Parsing/SplitArguments.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Usage/DumpHelpGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Usage/HelpCommand.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Usage/HelpGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Usage/MessageInfo.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Usage/UsageGenerator.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Utilities/CollectionExtensions.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Utilities/Platform.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Utilities/SequenceExtensions.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Utilities/StringExtensions.swift
+/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/checkouts/swift-argument-parser/Sources/ArgumentParser/Utilities/Tree.swift

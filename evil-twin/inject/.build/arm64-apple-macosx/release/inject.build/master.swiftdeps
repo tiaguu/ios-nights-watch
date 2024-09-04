@@ -1,0 +1,11 @@
+version: "Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)"
+options: "36e3419f92e2a8dc77f718b812bdb6b6166f0206928b82ef3542e91a44cf01f9"
+build_start_time: [1721467627, 539728000]
+build_end_time: [1721467628, 507714000]
+inputs:
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/BitType.swift": [1721467557, 862779301]
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/Command.swift": [1721467557, 862852759]
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/Extension.swift": [1721467557, 862913800]
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/Inject.swift": [1721467557, 863019799]
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/Shell.swift": [1721467557, 863073466]
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Sources/inject/main.swift": [1721467557, 863126174]

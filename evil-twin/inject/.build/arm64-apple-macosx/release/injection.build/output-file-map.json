@@ -1,0 +1,32 @@
+{
+  "": {
+    "dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/injection.d",
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/injection.o",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/master.swiftdeps"
+  },
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Injection/Injection/BitType.swift": {
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/BitType.swift.o",
+    "swiftmodule": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/BitType~partial.swiftmodule",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/BitType.swiftdeps"
+  },
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Injection/Injection/Command.swift": {
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Command.swift.o",
+    "swiftmodule": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Command~partial.swiftmodule",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Command.swiftdeps"
+  },
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Injection/Injection/Extension.swift": {
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Extension.swift.o",
+    "swiftmodule": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Extension~partial.swiftmodule",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Extension.swiftdeps"
+  },
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Injection/Injection/Inject.swift": {
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Inject.swift.o",
+    "swiftmodule": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Inject~partial.swiftmodule",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Inject.swiftdeps"
+  },
+  "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/Injection/Injection/Shell.swift": {
+    "object": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Shell.swift.o",
+    "swiftmodule": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Shell~partial.swiftmodule",
+    "swift-dependencies": "/Users/aptoide/Desktop/Tiago/uni/masters/malware-thesis/project/ios-nights-watch/evil-twin/inject/.build/arm64-apple-macosx/release/injection.build/Shell.swiftdeps"
+  }
+}

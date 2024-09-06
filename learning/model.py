@@ -111,7 +111,7 @@ def generate_embeddings_batch(file_paths, model, max_length):
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=250):
+def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=500):
     labels = []
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
@@ -121,7 +121,7 @@ def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=
     logging.info(f'Labels: {np.array(labels).shape}')
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=250):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=500):
     embeddings = []
     
     # Generate embeddings for the instructions

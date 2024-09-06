@@ -40,15 +40,15 @@ def main():
     file_paths_and_labels = []
 
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:10]
-    for file in goodware_files[:5]:
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:5]
+    for file in goodware_files:
         filepath = os.path.join(goodware_folder, file)
         file_labeled = (filepath, 0)
         file_paths_and_labels.append(file_labeled)
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:10]
-    for file in malware_files[:5]:
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:5]
+    for file in malware_files:
         filepath = os.path.join(malware_folder, file)
         file_labeled = (filepath, 1)
         file_paths_and_labels.append(file_labeled)
@@ -111,17 +111,17 @@ def generate_embeddings_batch(file_paths, model, max_length):
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=50):
+def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=250):
     labels = []
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
     embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size = chunk_size)
     labels.append(label)
-    logging.info(f'Embeddings: {embeddings}')
-    logging.info(f'Labels: {labels}')
+    logging.info(f'Embeddings: {np.array(embeddings).shape}')
+    logging.info(f'Labels: {np.array(labels).shape}')
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=50):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=250):
     embeddings = []
     
     # Generate embeddings for the instructions

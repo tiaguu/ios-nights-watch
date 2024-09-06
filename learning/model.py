@@ -137,6 +137,10 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50,
     else:
         # Split the sequence into smaller chunks of size `chunk_size`
         chunks = split_sequence_into_chunks(embeddings, chunk_size)
+
+        if len(chunks[-1]) < chunk_size:
+            for i in range(chunk_size - len(chunks[-1])):
+                chunks[-1].append(np.zeros(model.vector_size))
         
         # Return the padded chunks as the final input
         return np.array(chunks)

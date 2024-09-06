@@ -121,8 +121,10 @@ def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=
     logging.info(f'Labels: {labels}')
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size=50):
+def generate_embedding_for_app(app_tokenized_instructions, model, chunk_size=50, max_length=50):
     embeddings = []
+    
+    # Generate embeddings for the instructions
     for instruction in app_tokenized_instructions:
         token = instruction[0]
         if token in model.wv:
@@ -136,11 +138,11 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length, ch
         # Split the sequence into smaller chunks of size `chunk_size`
         chunks = split_sequence_into_chunks(embeddings, chunk_size)
         
-        # Now, pad each chunk individually to ensure uniform length (max_length)
-        padded_chunks = [pad_sequences(chunk, maxlen=max_length, dtype='float32', padding='post') for chunk in chunks]
+        # Pad all chunks at once to ensure uniform length (max_length)
+        padded_chunks = pad_sequences(chunks, maxlen=max_length, dtype='float32', padding='post')
 
         # Return the padded chunks as the final input
-        return np.array(padded_chunks)
+        return padded_chunks
 
 def split_sequence_into_chunks(sequence, chunk_size):
     """Splits the input sequence into smaller chunks of size `chunk_size`."""

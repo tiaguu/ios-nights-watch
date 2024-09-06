@@ -41,14 +41,14 @@ def main():
 
     goodware_dir = os.listdir(goodware_folder)
     goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:10]
-    for file in goodware_files:
+    for file in goodware_files[:5]:
         filepath = os.path.join(goodware_folder, file)
         file_labeled = (filepath, 0)
         file_paths_and_labels.append(file_labeled)
 
     malware_dir = os.listdir(malware_folder)
     malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:10]
-    for file in malware_files:
+    for file in malware_files[:5]:
         filepath = os.path.join(malware_folder, file)
         file_labeled = (filepath, 1)
         file_paths_and_labels.append(file_labeled)
@@ -112,7 +112,6 @@ def generate_embeddings_file(file_path_and_label, model, max_length):
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
     embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length)
-    logging.info(f'Embeddings Shape: {embeddings.shape}')
     labels.append(label)
     logging.info(f'Embeddings: {embeddings}')
     logging.info(f'Labels: {labels}')

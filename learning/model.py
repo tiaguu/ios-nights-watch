@@ -95,25 +95,39 @@ def main():
     loss, accuracy = model.evaluate(X_test, y_test)
     logging.info(f'Accuracy: {accuracy * 100:.2f}%')
 
+def generate_embeddings_batch(file_paths, model, max_length):
+    X_batch = []
+    y_batch = []
+    for i in range(0, len(file_paths)):
+        logging.info(f'Running batch {str(i)}')
+        file_path_and_label = file_paths[i]
+        X, y = generate_embeddings_file(file_path_and_label, model, max_length)
+        X_batch.append(X)
+        y_batch.append(y)
+
+    return np.array(X_batch), np.array(y_batch)
 
 def generate_embeddings_file(file_path_and_label, model, max_length):
     labels = []
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
-    embeddings = [generate_embedding_for_app(app_tokenized_instructions, model, max_length)]
-    logging.info(f'embeddings shape: {np.array(embeddings).shape}')
+    embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length)
+    logging.info(f'Embeddings Shape: {embeddings.shape}')
     labels.append(label)
+    logging.info(f'Embeddings: {embeddings}')
+    logging.info(f'Labels: {labels}')
     return np.array(embeddings), np.array(labels)
 
 def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
     embeddings = []
     for instruction in app_tokenized_instructions:
-        for token in instruction:
-            if token in model.wv:
-                embeddings.append(model.wv[token])
-            else:
-                embeddings.append(np.zeros(model.vector_size))
-    logging.info(f'embeddings shape: ({len(embeddings)}, {len(embeddings[0])})')
+        token = instruction[0]
+        if token in model.wv:
+            embeddings.append(model.wv[token])
+        else:
+            embeddings.append(np.zeros(model.vector_size))
+    logging.info(f'Embeddings Shape: ({len(embeddings)}, {len(embeddings[0])})')
+    # embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
     return embeddings
 
 def process_file(path):

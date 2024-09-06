@@ -127,7 +127,7 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
             embeddings.append(np.zeros(model.vector_size))
     logging.info(f'Embeddings Shape: ({len(embeddings)}, {len(embeddings[0])})')
     # embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
-    return embeddings
+    return np.array(embeddings)
 
 def process_file(path):
     application, extension = os.path.splitext(os.path.basename(path))

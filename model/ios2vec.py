@@ -60,7 +60,7 @@ def main():
         return
 
     corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
-    word2vec_model = Word2Vec(corpus, vector_size=20, window=3, min_count=1, workers=32, epochs=1) # For workers on linux use: nproc
+    word2vec_model = Word2Vec(corpus, vector_size=20, window=3, min_count=1, sample=0.0, workers=32, epochs=1) # For workers on linux use: nproc
 
     word2vec_model.save(os.path.join(model_folder, "ios2vec.model"))    
 

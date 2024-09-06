@@ -7,8 +7,8 @@ from preprocess import Preprocessor
 from gensim.models import Word2Vec
 import numpy as np
 from sklearn.model_selection import train_test_split
-# from keras.models import Sequential
-# from keras.layers import LSTM, Dense
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 def main():
@@ -61,16 +61,16 @@ def main():
     # Define LSTM model
     max_length = 5  # Define the maximum length of sequences
 
-    # model = Sequential()
-    # model.add(LSTM(64, input_shape=(None, max_length, ios2vec_model.vector_size), return_sequences=True))
-    # model.add(LSTM(64))
-    # model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
+    model = Sequential()
+    model.add(LSTM(64, input_shape=(None, ios2vec_model.vector_size), return_sequences=True))
+    model.add(LSTM(64))
+    model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
 
-    # logging.info(f'Defined the model')
+    logging.info(f'Defined the model')
 
-    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    # logging.info(f'Compiled the model')
+    logging.info(f'Compiled the model')
 
     # Incremental training setup
     batch_size = 1
@@ -84,38 +84,49 @@ def main():
             file_path_and_label = train_paths[i]
             X_train, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
             logging.info(f'Generated batch embeddings')
-            # model.train_on_batch(X_train, y_train)
+            model.train_on_batch(X_train, y_train)
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
 
     # Evaluate the model
-    # X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
-    # loss, accuracy = model.evaluate(X_test, y_test)
-    # print(f'Accuracy: {accuracy * 100:.2f}%')
+    X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
+    loss, accuracy = model.evaluate(X_test, y_test)
+    print(f'Accuracy: {accuracy * 100:.2f}%')
 
+def generate_embeddings_batch(file_paths, model, max_length):
+    X_batch = []
+    y_batch = []
+    for i in range(0, len(file_paths)):
+        logging.info(f'Running batch {str(i)}')
+        file_path_and_label = file_paths[i]
+        X, y = generate_embeddings_file(file_path_and_label, model, max_length)
+        X_batch.append(X)
+        y_batch.append(y)
+
+    return np.array(X_batch), np.array(y_batch)
 
 def generate_embeddings_file(file_path_and_label, model, max_length):
     labels = []
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
     embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length)
-    logging.info(f'embeddings shape: {embeddings.shape}')
+    logging.info(f'Embeddings Shape: {embeddings.shape}')
     labels.append(label)
+    logging.info(f'Embeddings: {embeddings}')
+    logging.info(f'Labels: {labels}')
     return np.array(embeddings), np.array(labels)
 
 def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
     embeddings = []
     for instruction in app_tokenized_instructions:
-        sequence_embedding = []
-        for token in instruction:
-            if token in model.wv:
-                sequence_embedding.append(model.wv[token])
-            else:
-                sequence_embedding.append(np.zeros(model.vector_size))
-        embeddings.append(sequence_embedding)
-    logging.info(f'embeddings shape: ({len(embeddings)}, {len(embeddings[0])}')
-    embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
-    return embedded_instructions_padded
+        token = instruction[0]
+        if token in model.wv:
+            embeddings.append(model.wv[token])
+        else:
+            embeddings.append(np.zeros(model.vector_size))
+    logging.info(f'Embeddings Shape: ({len(embeddings)}, {len(embeddings[0])})')
+    # embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
+    return embeddings
 
 def process_file(path):
     application, extension = os.path.splitext(os.path.basename(path))

@@ -85,6 +85,7 @@ def main():
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
             X_train, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
+            X_train = np.array([X_train])
             logging.info(f'Generated batch embeddings')
             model.train_on_batch(X_train, y_train)
             logging.info(f'Trained on batch')

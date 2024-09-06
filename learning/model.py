@@ -121,7 +121,7 @@ def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=
     logging.info(f'Labels: {labels}')
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, chunk_size=50, max_length=50):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=50):
     embeddings = []
     
     # Generate embeddings for the instructions

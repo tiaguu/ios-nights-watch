@@ -84,10 +84,13 @@ def main():
         for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
-            X_train, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
-            X_train = np.array([X_train])
-            logging.info(f'Generated batch embeddings')
-            model.train_on_batch(X_train, y_train)
+            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
+
+            # Iterate over each chunk and train on it
+            for X_train in X_train_chunks:
+                model.train_on_batch(np.array([X_train]), y_train)
+                logging.info(f'Trained on chunk')
+            
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
 
@@ -102,23 +105,23 @@ def generate_embeddings_batch(file_paths, model, max_length):
     for i in range(0, len(file_paths)):
         logging.info(f'Running batch {str(i)}')
         file_path_and_label = file_paths[i]
-        X, y = generate_embeddings_file(file_path_and_label, model, max_length)
+        X, y = generate_embeddings_file(file_path_and_label, model, max_length, chunk_size = 0)
         X_batch.append(X)
         y_batch.append(y)
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, model, max_length):
+def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=50):
     labels = []
     file_path, label = file_path_and_label
     app_tokenized_instructions = process_file(file_path)
-    embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length)
+    embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size = chunk_size)
     labels.append(label)
     logging.info(f'Embeddings: {embeddings}')
     logging.info(f'Labels: {labels}')
     return np.array(embeddings), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size=50):
     embeddings = []
     for instruction in app_tokenized_instructions:
         token = instruction[0]
@@ -126,9 +129,22 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length):
             embeddings.append(model.wv[token])
         else:
             embeddings.append(np.zeros(model.vector_size))
-    logging.info(f'Embeddings Shape: ({len(embeddings)}, {len(embeddings[0])})')
-    # embedded_instructions_padded = pad_sequences(embeddings, maxlen=max_length, dtype='float32', padding='post')
-    return np.array(embeddings)
+
+    if chunk_size == 0:
+        return np.array(embeddings)
+    else:
+        # Split the sequence into smaller chunks of size `chunk_size`
+        chunks = split_sequence_into_chunks(embeddings, chunk_size)
+        
+        # Now, pad each chunk individually to ensure uniform length (max_length)
+        padded_chunks = [pad_sequences(chunk, maxlen=max_length, dtype='float32', padding='post') for chunk in chunks]
+
+        # Return the padded chunks as the final input
+        return np.array(padded_chunks)
+
+def split_sequence_into_chunks(sequence, chunk_size):
+    """Splits the input sequence into smaller chunks of size `chunk_size`."""
+    return [sequence[i:i + chunk_size] for i in range(0, len(sequence), chunk_size)]
 
 def process_file(path):
     application, extension = os.path.splitext(os.path.basename(path))

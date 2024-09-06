@@ -138,11 +138,8 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50,
         # Split the sequence into smaller chunks of size `chunk_size`
         chunks = split_sequence_into_chunks(embeddings, chunk_size)
         
-        # Pad all chunks at once to ensure uniform length (max_length)
-        padded_chunks = pad_sequences(chunks, maxlen=max_length, dtype='float32', padding='post')
-
         # Return the padded chunks as the final input
-        return padded_chunks
+        return np.array(chunks)
 
 def split_sequence_into_chunks(sequence, chunk_size):
     """Splits the input sequence into smaller chunks of size `chunk_size`."""

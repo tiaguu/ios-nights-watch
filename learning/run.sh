@@ -6,8 +6,8 @@ if [ -f .env ]; then
 fi
 
 # Define the image and container names
-IMAGE_NAME="ios2vec-image"
-CONTAINER_NAME="ios2vec-container"
+IMAGE_NAME="learning-image"
+CONTAINER_NAME="learning-container"
 
 # Stop and remove the existing container if it exists
 docker stop $CONTAINER_NAME 2>/dev/null

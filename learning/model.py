@@ -102,16 +102,16 @@ def main():
     logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
     # Evaluate the model
-    test_model(test_paths, model, max_length)
+    test_model(test_paths, model, ios2vec_model, max_length)
 
-def test_model(test_paths, model, max_length):
+def test_model(test_paths, model, embeddings_model, max_length):
     accuracies = []
     losses = []
     y_true = []  # Actual labels
     y_pred = []  # Predicted labels
 
     for test_sample in test_paths:
-        X_test, y_test = generate_embeddings_file(test_sample, model, max_length, chunk_size=0)
+        X_test, y_test = generate_embeddings_file(test_sample, embeddings_model, max_length, chunk_size=0)
         
         # Make sure X_test is wrapped in an extra dimension for batch processing
         X_test = np.array([X_test])

@@ -240,8 +240,5 @@ class Preprocessor():
                         final.append([' '.join(instruction_tokenized)])
             else:
                 pass
-        
-        logging.info(f'Total Lines: {total_lines}')
-        logging.info(f'Kept Lines: {kept_lines}')
 
         return final

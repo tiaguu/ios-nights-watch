@@ -2,6 +2,7 @@ import re
 from pyparsing import Word, alphanums, alphas, oneOf, Group, delimitedList, nestedExpr
 import string
 import random
+import logging
 
 class Preprocessor():
     def is_address(self, string):
@@ -161,8 +162,12 @@ class Preprocessor():
         include_opcodes_tuple = tuple(include_opcodes)
 
         opcodes = []
-        
+
+        total_lines = 0
+        kept_lines = 0
         for line in lines:
+            total_lines += 1
+
             instruction = line.split('\t')
             if self.is_address(instruction[0]):
                 if len(instruction) > 1:
@@ -197,10 +202,12 @@ class Preprocessor():
                         for argument in arguments:
                             instruction_tokenized.append(argument)
                             
+                        kept_lines += 1
                         final.append([' '.join(instruction_tokenized)])
             else:
                 pass
         
-        print(opcodes)
+        logging.info(f'Total Lines: {total_lines}')
+        logging.info(f'Kept Lines: {kept_lines}')
 
         return final

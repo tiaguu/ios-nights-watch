@@ -147,21 +147,21 @@ class Preprocessor():
                           'prfm', 'prfum', 'dmb', 'dsb', 'isb', 'sha256h', 'sha512h', 'sha1c', 
                           'sha1su0', 'crc32'}
         
-        # include_opcodes = [
-        #     'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
-        #     'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
-        #     'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
-        #     'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
-        #     'mrs', 'msr', 'sys', 'svc',  # System instructions
-        #     'fmul', 'fadd', 'fsub',  # Optional SIMD
-        #     'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
-        # ]
-
         include_opcodes = [
-            'msr', 'mul', 'adc', 'teq', 'ldm', 'orr', 'sbc',
-            'and', 'mvn', 'stc', 'stm', 'tst', 'bx', 'cmn',
-            'sub', 'cmp', 'str', 'mla', 'ldr', 'eor', 'b', 'mov'
+            'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
+            # 'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
+            # 'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
+            # 'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
+            # 'mrs', 'msr', 'sys', 'svc',  # System instructions
+            # 'fmul', 'fadd', 'fsub',  # Optional SIMD
+            # 'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
         ]
+
+        # include_opcodes = [
+        #     'msr', 'mul', 'adc', 'teq', 'ldm', 'orr', 'sbc',
+        #     'and', 'mvn', 'stc', 'stm', 'tst', 'bx', 'cmn',
+        #     'sub', 'cmp', 'str', 'mla', 'ldr', 'eor', 'b', 'mov'
+        # ]
         
         # Prepare a tuple for faster lookup with str.startswith()
         ignore_opcodes_tuple = tuple(ignore_opcodes)

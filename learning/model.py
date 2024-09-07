@@ -98,8 +98,8 @@ def main():
         logging.info(f'Epoch {epoch + 1} complete')
 
     # Save model weights
-    model.save_weights(f'{weights_folder}/lstm_model_weights.h5')
-    logging.info(f'Model weights saved to {weights_folder}/lstm_model_weights.h5')
+    model.save_weights(f'{weights_folder}/lstm_model.weights.h5')
+    logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
     # Evaluate the model
     X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)

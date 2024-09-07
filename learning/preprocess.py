@@ -125,13 +125,26 @@ class Preprocessor():
         final = []
         lines = input.split('\n')
         operation_list = []
-        ignore_opcodes = {'.long', 'nop', 'adr', 'adrp', 'tbl', 'tbx', 'dup', 'zip1', 
+        ignore_opcodes = {'.long', '.short', '.byte', 'nop', 'adr', 'adrp', 'tbl', 'tbx', 'dup', 'zip1', 
                           'zip2', 'trn1', 'trn2', 'uzp1', 'uzp2', 'ld1', 'ld2', 'ld3', 
                           'ld4', 'st1', 'st2', 'st3', 'st4', 'rbit', 'rev', 'rev16', 
                           'rev32', 'rev64', 'fmov', 'fcvt', 'fcvtas', 'fcvtn', 'fcvtms', 
                           'fcvtpu', 'fcvtzu', 'fabs', 'fneg', 'sqxtn', 'sqxtn2', 'uqxtn', 
                           'uqxtn2', 'sqxtun', 'sqxtun2', 'addp', 'faddp', 'cmle', 'cmge', 
-                          'cmeq', 'cmgt', 'cmhi', 'cmhs', 'cnt', 'aesd', 'aese', 'aesimc'}
+                          'cmeq', 'cmgt', 'cmhi', 'cmhs', 'cnt', 'aesd', 'aese', 'aesimc',
+                          'msr', 'mrs', 'sys', 'tlbi', 'dcps1', 'dcps2', 'dcps3', 'hlt',
+                          'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur', 'ldrb', 'strb', 
+                          'ldrh', 'strh', 'add', 'sub', 'mul', 'fmul', 'fadd', 'fmla',
+                          'fmls', 'fcmla', 'sqdmulh', 'fmin', 'fmax', 'svc', 'brk', 'pacia', 
+                          'pacib', 'abs', 'ngc', 'ngcs', 'madd', 'mls', 'movi', 'lsl', 
+                          'lsr', 'asr', 'ror', 'clz', 'bic', 'eor', 'orn', 'and', 'orr', 
+                          'neg', 'negs', 'ldrsb', 'ldrsw', 'ldxp', 'stxp', 'stllr', 'ldclr', 
+                          'ldset', 'fsub', 'fcmp', 'fsqrt', 'fmadd', 'fmsub', 'fnmadd', 
+                          'fnmsub', 'frecpe', 'frsqrte', 'ushl', 'ushr', 'uqrshl', 'uqrshrn', 
+                          'uqadd', 'uqsub', 'pmull', 'pmull2', 'facgt', 'facge', 'fcsel', 
+                          'fccmp', 'sqdmull', 'uqshl', 'uqshrn', 'sqrshl', 'sqrshrn', 'sqshlu',
+                          'prfm', 'prfum', 'dmb', 'dsb', 'isb', 'sha256h', 'sha512h', 'sha1c', 
+                          'sha1su0', 'crc32'}
         
         # Prepare a tuple for faster lookup with str.startswith()
         ignore_opcodes_tuple = tuple(ignore_opcodes)

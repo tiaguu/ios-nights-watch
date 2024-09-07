@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from sklearn.metrics import confusion_matrix
 
 def main():
     stream_handler = logging.StreamHandler()
@@ -25,12 +26,14 @@ def main():
     parser.add_argument("goodware_folder", type=str, help="The folder with goodware files")
     parser.add_argument("malware_folder", type=str, help="The folder with malware files")
     parser.add_argument("ios2vec_folder", type=str, help="The folder with ios2vec model")
+    parser.add_argument("weights_folder", type=str, help="The folder where to store the model's weights")
 
     args = parser.parse_args()
 
     goodware_folder = args.goodware_folder
     malware_folder = args.malware_folder
     ios2vec_folder = args.ios2vec_folder
+    weights_folder = args.weights_folder
 
     # Load the trained Word2Vec model
     ios2vec_model = Word2Vec.load(f"{ios2vec_folder}/ios2vec.model")
@@ -40,14 +43,14 @@ def main():
     file_paths_and_labels = []
 
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:5]
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:1]
     for file in goodware_files:
         filepath = os.path.join(goodware_folder, file)
         file_labeled = (filepath, 0)
         file_paths_and_labels.append(file_labeled)
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:5]
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:1]
     for file in malware_files:
         filepath = os.path.join(malware_folder, file)
         file_labeled = (filepath, 1)
@@ -94,10 +97,54 @@ def main():
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
 
+    # Save model weights
+    model.save_weights(f'{weights_folder}/lstm_model_weights.h5')
+    logging.info(f'Model weights saved to {weights_folder}/lstm_model_weights.h5')
+
     # Evaluate the model
     X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
     loss, accuracy = model.evaluate(X_test, y_test)
     logging.info(f'Accuracy: {accuracy * 100:.2f}%')
+
+def test_model(test_paths, model, max_length):
+    accuracies = []
+    losses = []
+    y_true = []  # Actual labels
+    y_pred = []  # Predicted labels
+
+    for test_sample in test_paths:
+        X_test, y_test = generate_embeddings_file(test_sample, model, max_length, chunk_size=0)
+        
+        # Make sure X_test is wrapped in an extra dimension for batch processing
+        X_test = np.array([X_test])
+
+        # Get model predictions
+        predictions = model.predict(X_test)
+        predicted_label = (predictions > 0.5).astype(int)  # Assuming binary classification with threshold 0.5
+        
+        # Append the actual and predicted labels
+        y_true.append(y_test)
+        y_pred.append(predicted_label[0][0])
+
+        # Evaluate the model on the single test instance
+        loss, accuracy = model.evaluate(X_test, np.array([y_test]), verbose=0)
+        
+        # Collect the loss and accuracy for later averaging
+        accuracies.append(accuracy)
+        losses.append(loss)
+
+    # Calculate the average accuracy and loss over all test samples
+    average_accuracy = np.mean(accuracies)
+    average_loss = np.mean(losses)
+
+    logging.info(f'Average Loss: {average_loss:.4f}')
+    logging.info(f'Average Accuracy: {average_accuracy * 100:.2f}%')
+
+    # Build and display the confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    logging.info(f'Confusion Matrix:\n{cm}')
+
+    return cm  # Return the confusion matrix if needed for further analysis
 
 def generate_embeddings_batch(file_paths, model, max_length):
     X_batch = []

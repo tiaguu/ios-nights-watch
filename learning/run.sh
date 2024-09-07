@@ -17,4 +17,4 @@ docker rm $CONTAINER_NAME 2>/dev/null
 docker build -t $IMAGE_NAME .
 
 # Run the Docker container
-docker run -d --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $IOS2VEC_DIR:/app/ios2vec $IMAGE_NAME
+docker run -d --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $IOS2VEC_DIR:/app/ios2vec -v $WEIGHTS_DIR:/app/weights $IMAGE_NAME

@@ -11,11 +11,11 @@ class iOSCorpus:
         self.files = []
         
         goodware_files = os.listdir(goodware_folder)
-        for file in goodware_files:
+        for file in goodware_files[:50]:
             self.files.append((file, os.path.join(goodware_folder, file)))
 
         malware_files = os.listdir(malware_folder)
-        for file in malware_files:
+        for file in malware_files[:50]:
             self.files.append((file, os.path.join(malware_folder, file)))
         
 

@@ -102,9 +102,7 @@ def main():
     logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
     # Evaluate the model
-    X_test, y_test = generate_embeddings_batch(test_paths, ios2vec_model, max_length)
-    loss, accuracy = model.evaluate(X_test, y_test)
-    logging.info(f'Accuracy: {accuracy * 100:.2f}%')
+    test_model(test_paths, ios2vec_model, max_length)
 
 def test_model(test_paths, model, max_length):
     accuracies = []

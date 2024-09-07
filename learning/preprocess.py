@@ -147,14 +147,42 @@ class Preprocessor():
                           'prfm', 'prfum', 'dmb', 'dsb', 'isb', 'sha256h', 'sha512h', 'sha1c', 
                           'sha1su0', 'crc32'}
         
+        # include_opcodes = [
+        #     'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
+        #     # 'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
+        #     # 'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
+        #     # 'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
+        #     # 'mrs', 'msr', 'sys', 'svc',  # System instructions
+        #     # 'fmul', 'fadd', 'fsub',  # Optional SIMD
+        #     # 'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
+        # ]
+
+        # control_flow_opcodes
         include_opcodes = [
-            'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
-            # 'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
-            # 'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
-            # 'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
-            # 'mrs', 'msr', 'sys', 'svc',  # System instructions
-            # 'fmul', 'fadd', 'fsub',  # Optional SIMD
-            # 'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
+            # Unconditional Branches
+            'b', 'bl', 'bx', 'blx',
+            
+            # Conditional Branches
+            'b.eq', 'b.ne', 'b.lt', 'b.gt', 'b.le', 'b.ge', 'b.hi', 'b.lo', 'b.pl', 
+            'b.mi', 'b.vs', 'b.vc', 'b.cs', 'b.cc', 'b.al', 'b.nv',
+            
+            # Compare and Branch
+            'cbz', 'cbnz',
+            
+            # Test and Branch
+            'tbz', 'tbnz',
+            
+            # Return Instructions
+            'ret', 'eret',
+            
+            # Exception Generation
+            'svc', 'hvc', 'smc', 'brk', 'hlt',
+            
+            # Indirect Branching
+            'br', 'blr', 'braa', 'brab', 'retab',
+            
+            # Hints
+            'nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb'
         ]
 
         # include_opcodes = [

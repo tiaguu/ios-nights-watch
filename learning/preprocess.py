@@ -146,8 +146,20 @@ class Preprocessor():
                           'prfm', 'prfum', 'dmb', 'dsb', 'isb', 'sha256h', 'sha512h', 'sha1c', 
                           'sha1su0', 'crc32'}
         
+        include_opcodes = [
+            'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
+            'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
+            'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
+            'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
+            'mrs', 'msr', 'sys', 'svc',  # System instructions
+            'fmul', 'fadd', 'fsub',  # Optional SIMD
+            'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
+        ]
+        
         # Prepare a tuple for faster lookup with str.startswith()
         ignore_opcodes_tuple = tuple(ignore_opcodes)
+        include_opcodes_tuple = tuple(include_opcodes)
+
         opcodes = []
         
         for line in lines:
@@ -173,7 +185,7 @@ class Preprocessor():
                             arguments = []
 
                     # Use str.startswith() with the tuple of ignore opcodes
-                    if not operation.startswith(ignore_opcodes_tuple):
+                    if operation.startswith(include_opcodes_tuple):
                         instruction_tokenized = []
                         instruction_tokenized.append(operation)
                         if operation not in operation_list:

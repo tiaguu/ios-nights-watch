@@ -135,6 +135,7 @@ class Preprocessor():
         
         # Prepare a tuple for faster lookup with str.startswith()
         ignore_opcodes_tuple = tuple(ignore_opcodes)
+        opcodes = []
         
         for line in lines:
             instruction = line.split('\t')
@@ -165,6 +166,9 @@ class Preprocessor():
                         if operation not in operation_list:
                             operation_list.append(operation)
 
+                            if operation not in opcodes:
+                                opcodes.append(operation)
+
                         for argument in arguments:
                             instruction_tokenized.append(argument)
                             
@@ -172,4 +176,6 @@ class Preprocessor():
             else:
                 pass
         
+        print(opcodes)
+
         return final

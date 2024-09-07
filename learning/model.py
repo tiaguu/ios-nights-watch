@@ -43,66 +43,70 @@ def main():
     file_paths_and_labels = []
 
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:1]
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:50]
     for file in goodware_files:
         filepath = os.path.join(goodware_folder, file)
-        file_labeled = (filepath, 0)
-        file_paths_and_labels.append(file_labeled)
+        process_file(filepath)
+
+        # file_labeled = (filepath, 0)
+        # file_paths_and_labels.append(file_labeled)
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:1]
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:50]
     for file in malware_files:
         filepath = os.path.join(malware_folder, file)
-        file_labeled = (filepath, 1)
-        file_paths_and_labels.append(file_labeled)
+        process_file(filepath)
 
-    # Train/test split
-    train_paths, test_paths = train_test_split(file_paths_and_labels, test_size=0.2, random_state=42)
+        # file_labeled = (filepath, 1)
+        # file_paths_and_labels.append(file_labeled)
 
-    logging.info('Separated training and testing')
-    logging.info(f'Training: {len(train_paths)}')
-    logging.info(f'Testing: {len(test_paths)}')
+    # # Train/test split
+    # train_paths, test_paths = train_test_split(file_paths_and_labels, test_size=0.2, random_state=42)
 
-    # Define LSTM model
-    max_length = 5  # Define the maximum length of sequences
+    # logging.info('Separated training and testing')
+    # logging.info(f'Training: {len(train_paths)}')
+    # logging.info(f'Testing: {len(test_paths)}')
 
-    model = Sequential()
-    model.add(LSTM(64, input_shape=(None, ios2vec_model.vector_size), return_sequences=True))
-    model.add(LSTM(64))
-    model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
+    # # Define LSTM model
+    # max_length = 5  # Define the maximum length of sequences
 
-    logging.info(f'Defined the model')
+    # model = Sequential()
+    # model.add(LSTM(64, input_shape=(None, ios2vec_model.vector_size), return_sequences=True))
+    # model.add(LSTM(64))
+    # model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # logging.info(f'Defined the model')
 
-    logging.info(f'Compiled the model')
+    # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    # Incremental training setup
-    batch_size = 1
-    num_epochs = 1
+    # logging.info(f'Compiled the model')
 
-    for epoch in range(num_epochs):
-        logging.info(f'Running epoch {epoch + 1}')
-        np.random.shuffle(train_paths)  # Shuffle training data each epoch
-        for i in range(0, len(train_paths)):
-            logging.info(f'Running batch {str(i)}')
-            file_path_and_label = train_paths[i]
-            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
+    # # Incremental training setup
+    # batch_size = 1
+    # num_epochs = 1
 
-            # Iterate over each chunk and train on it
-            for X_train in X_train_chunks:
-                model.train_on_batch(np.array([X_train]), y_train)
-                logging.info(f'Trained on chunk')
+    # for epoch in range(num_epochs):
+    #     logging.info(f'Running epoch {epoch + 1}')
+    #     np.random.shuffle(train_paths)  # Shuffle training data each epoch
+    #     for i in range(0, len(train_paths)):
+    #         logging.info(f'Running batch {str(i)}')
+    #         file_path_and_label = train_paths[i]
+    #         X_train_chunks, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
+
+    #         # Iterate over each chunk and train on it
+    #         for X_train in X_train_chunks:
+    #             model.train_on_batch(np.array([X_train]), y_train)
+    #             logging.info(f'Trained on chunk')
             
-            logging.info(f'Trained on batch')
-        logging.info(f'Epoch {epoch + 1} complete')
+    #         logging.info(f'Trained on batch')
+    #     logging.info(f'Epoch {epoch + 1} complete')
 
-    # Save model weights
-    model.save_weights(f'{weights_folder}/lstm_model.weights.h5')
-    logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
+    # # Save model weights
+    # model.save_weights(f'{weights_folder}/lstm_model.weights.h5')
+    # logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
-    # Evaluate the model
-    test_model(test_paths, model, ios2vec_model, max_length)
+    # # Evaluate the model
+    # test_model(test_paths, model, ios2vec_model, max_length)
 
 def test_model(test_paths, model, embeddings_model, max_length):
     accuracies = []

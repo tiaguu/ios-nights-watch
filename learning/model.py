@@ -102,7 +102,7 @@ def main():
     logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
     # Evaluate the model
-    test_model(test_paths, ios2vec_model, max_length)
+    test_model(test_paths, model, max_length)
 
 def test_model(test_paths, model, max_length):
     accuracies = []

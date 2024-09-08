@@ -6,6 +6,7 @@ import zipfile
 from gensim.models import Word2Vec
 from preprocess import Preprocessor
 import numpy as np
+from concurrent.futures import ProcessPoolExecutor
 
 class iOSCorpus:
     def __init__(self, goodware_folder, malware_folder):
@@ -74,84 +75,78 @@ def main():
 
     model = Word2Vec.load(f"{model_folder}/ios2vec.model")
 
-    goodware_non_embedded_instructions = 0
-    goodware_total_instructions = 0
+    # Helper function to process a single file
+    def process_single_file(file_path, model, vector_folder, application):
+        total_instructions = 0
+        non_embedded_instructions = 0
+        vector_file_path = os.path.join(vector_folder, f"{application}.txt")
 
-    goodware_files = os.listdir(goodware_folder)
-    for file in goodware_files:
-        logging.info(f'Processing file: {file}')
-
-        path = os.path.join(goodware_folder, file)
-        application, extension = os.path.splitext(os.path.basename(path))
-        if extension == '.zip':
-            with tempfile.TemporaryDirectory() as temp_dir:
-                with zipfile.ZipFile(path, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
-
-                for temp_file in os.listdir(temp_dir):
-                    temp_root, temp_extension = os.path.splitext(temp_file)
-                    file_path = os.path.join(temp_dir, temp_file)
-                    if temp_extension == '.txt':
-                        app_tokenized_instructions = process_file(path, file)
-
-                        with open(f"{goodware_vector_folder}/{application}.txt", "w") as vector_file:
-                            for instruction in app_tokenized_instructions:
-                                goodware_total_instructions += 1
-
-                                token = instruction[0]
-                                if token in model.wv:
-                                    vector_file.write(f"{model.wv[token]}\n")
-                                else:
-                                    goodware_non_embedded_instructions += 1
-                                    vector_file.write(f"{np.zeros(model.vector_size)}\n")
+        app_tokenized_instructions = process_file(file_path)
+        with open(vector_file_path, "w") as vector_file:
+            for instruction in app_tokenized_instructions:
+                total_instructions += 1
+                token = instruction[0]
+                if token in model.wv:
+                    vector_file.write(f"{model.wv[token]}\n")
+                else:
+                    non_embedded_instructions += 1
+                    vector_file.write(f"{np.zeros(model.vector_size)}\n")
         
-        # self.files.append((file, os.path.join(goodware_folder, file)))
+        return total_instructions, non_embedded_instructions
 
-    malware_non_embedded_instructions = 0
-    malware_total_instructions = 0
+    # Process a folder of files (parallel)
+    def process_folder_parallel(folder, vector_folder, model, label):
+        files = os.listdir(folder)
+        vector_files = os.listdir(vector_folder)
+        
+        total_instructions = 0
+        non_embedded_instructions = 0
 
-    malware_files = os.listdir(malware_folder)
-    for file in malware_files:
-        logging.info(f'Processing file: {file}')
+        def process_zip_file(file):
+            path = os.path.join(folder, file)
+            application, extension = os.path.splitext(os.path.basename(path))
+            
+            if f"{application}.txt" not in vector_files and extension == '.zip':
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    with zipfile.ZipFile(path, 'r') as zip_ref:
+                        zip_ref.extractall(temp_dir)
 
-        path = os.path.join(malware_folder, file)
-        application, extension = os.path.splitext(os.path.basename(path))
-        if extension == '.zip':
-            with tempfile.TemporaryDirectory() as temp_dir:
-                with zipfile.ZipFile(path, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
+                    for temp_file in os.listdir(temp_dir):
+                        temp_root, temp_extension = os.path.splitext(temp_file)
+                        if temp_extension == '.txt':
+                            file_path = os.path.join(temp_dir, temp_file)
+                            return process_single_file(file_path, model, vector_folder, application)
+            
+            return 0, 0
 
-                for temp_file in os.listdir(temp_dir):
-                    temp_root, temp_extension = os.path.splitext(temp_file)
-                    file_path = os.path.join(temp_dir, temp_file)
-                    if temp_extension == '.txt':
-                        app_tokenized_instructions = process_file(path, file)
+        with ProcessPoolExecutor() as executor:
+            results = executor.map(process_zip_file, files)
 
-                        with open(f"{malware_vector_folder}/{application}.txt", "w") as vector_file:
-                            for instruction in app_tokenized_instructions:
-                                malware_total_instructions += 1
+        for total, non_embedded in results:
+            total_instructions += total
+            non_embedded_instructions += non_embedded
+        
+        logging.info(f'{label} Total Instructions: {total_instructions}')
+        logging.info(f'{label} Non-Embedded Instructions: {non_embedded_instructions}')
+        logging.info(f'{label} Non-Embedded %: {(non_embedded_instructions / total_instructions) * 100:.2f}%')
 
-                                token = instruction[0]
-                                if token in model.wv:
-                                    vector_file.write(f"{model.wv[token]}\n")
-                                else:
-                                    malware_non_embedded_instructions += 1
-                                    vector_file.write(f"{np.zeros(model.vector_size)}\n")
-        # self.files.append((file, os.path.join(malware_folder, file)))
+        return total_instructions, non_embedded_instructions
+
+    # Process both goodware and malware folders
+    malware_total, malware_non_embedded = process_folder_parallel(
+        malware_folder, malware_vector_folder, model, 'Malware'
+    )
     
-    logging.info(f'Goodware Total Instructions: {goodware_total_instructions}')
-    logging.info(f'Goodware Non-Embedded Instructions: {goodware_non_embedded_instructions}')
-    logging.info(f'Goodware Non-Embedded %: {(goodware_non_embedded_instructions / goodware_total_instructions) * 100}%')
+    goodware_total, goodware_non_embedded = process_folder_parallel(
+        goodware_folder, goodware_vector_folder, model, 'Goodware'
+    )
 
-    logging.info(f'Malware Total Instructions: {malware_total_instructions}')
-    logging.info(f'Malware Non-Embedded Instructions: {malware_non_embedded_instructions}')
-    logging.info(f'Malware Non-Embedded %: {(malware_non_embedded_instructions / malware_total_instructions) * 100}%')
-
-    total_instructions = goodware_total_instructions + malware_total_instructions
-    non_embedded_instructions = goodware_non_embedded_instructions + malware_non_embedded_instructions
+    # Summarize results
+    total_instructions = goodware_total + malware_total
+    non_embedded_instructions = goodware_non_embedded + malware_non_embedded
     logging.info(f'Total Instructions: {total_instructions}')
     logging.info(f'Total Non-Embedded Instructions: {non_embedded_instructions}')
-    logging.info(f'Total Non-Embedded %: {(non_embedded_instructions / total_instructions) * 100}%')
+    logging.info(f'Total Non-Embedded %: {(non_embedded_instructions / total_instructions) * 100:.2f}%')
 
     # corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
     # word2vec_model = Word2Vec(corpus, vector_size=20, window=3, min_count=1, sample=0.0, workers=32, epochs=1) # For workers on linux use: nproc

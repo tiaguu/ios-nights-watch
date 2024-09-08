@@ -94,7 +94,7 @@ def main():
                     if temp_extension == '.txt':
                         app_tokenized_instructions = process_file(path, file)
 
-                        with open(f"{goodware_vector_folder}/{file}.txt", "w") as vector_file:
+                        with open(f"{goodware_vector_folder}/{application}.txt", "w") as vector_file:
                             for instruction in app_tokenized_instructions:
                                 goodware_total_instructions += 1
 
@@ -127,7 +127,7 @@ def main():
                     if temp_extension == '.txt':
                         app_tokenized_instructions = process_file(path, file)
 
-                        with open(f"{malware_vector_folder}/{file}.txt", "w") as vector_file:
+                        with open(f"{malware_vector_folder}/{application}.txt", "w") as vector_file:
                             for instruction in app_tokenized_instructions:
                                 malware_total_instructions += 1
 

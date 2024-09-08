@@ -49,6 +49,7 @@ def process_single_file(file_path, model, vector_folder, application):
 
 # Moved process_zip_file outside
 def process_zip_file(file, folder, vector_folder, model):
+    logging.info(f"Processing File: {file}")
     path = os.path.join(folder, file)
     application, extension = os.path.splitext(os.path.basename(path))
 
@@ -86,18 +87,11 @@ def process_folder_parallel(folder, vector_folder, model, label):
 
     return total_instructions, non_embedded_instructions
 
-def process_file(path, file):
-    application, extension = os.path.splitext(file)
-    if extension == '.zip':
-        with tempfile.TemporaryDirectory() as temp_dir:
-            with zipfile.ZipFile(path, 'r') as zip_ref:
-                zip_ref.extractall(temp_dir)
-
-            for temp_file in os.listdir(temp_dir):
-                temp_root, temp_extension = os.path.splitext(temp_file)
-                file_path = os.path.join(temp_dir, temp_file)
-                if temp_extension == '.txt':
-                    return Preprocessor().clean_assembly_file(file_path)
+# Helper function for processing each file
+def process_file(path):
+    application, extension = os.path.splitext(path)
+    if extension == '.txt':
+        return Preprocessor().clean_assembly_file(path)
 
 def main():
     stream_handler = logging.StreamHandler()

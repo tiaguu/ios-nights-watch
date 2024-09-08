@@ -94,33 +94,34 @@ def main():
         
         return total_instructions, non_embedded_instructions
 
+    # Moved process_zip_file outside
+    def process_zip_file(file, folder, vector_folder, model):
+        path = os.path.join(folder, file)
+        application, extension = os.path.splitext(os.path.basename(path))
+
+        if extension == '.zip':
+            with tempfile.TemporaryDirectory() as temp_dir:
+                with zipfile.ZipFile(path, 'r') as zip_ref:
+                    zip_ref.extractall(temp_dir)
+
+                for temp_file in os.listdir(temp_dir):
+                    temp_root, temp_extension = os.path.splitext(temp_file)
+                    if temp_extension == '.txt':
+                        file_path = os.path.join(temp_dir, temp_file)
+                        return process_single_file(file_path, model, vector_folder, application)
+        
+        return 0, 0
+
     # Process a folder of files (parallel)
     def process_folder_parallel(folder, vector_folder, model, label):
         files = os.listdir(folder)
-        vector_files = os.listdir(vector_folder)
         
         total_instructions = 0
         non_embedded_instructions = 0
 
-        def process_zip_file(file):
-            path = os.path.join(folder, file)
-            application, extension = os.path.splitext(os.path.basename(path))
-            
-            if f"{application}.txt" not in vector_files and extension == '.zip':
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    with zipfile.ZipFile(path, 'r') as zip_ref:
-                        zip_ref.extractall(temp_dir)
-
-                    for temp_file in os.listdir(temp_dir):
-                        temp_root, temp_extension = os.path.splitext(temp_file)
-                        if temp_extension == '.txt':
-                            file_path = os.path.join(temp_dir, temp_file)
-                            return process_single_file(file_path, model, vector_folder, application)
-            
-            return 0, 0
-
+        # Use ProcessPoolExecutor and map function
         with ProcessPoolExecutor() as executor:
-            results = executor.map(process_zip_file, files)
+            results = executor.map(process_zip_file, files, [folder]*len(files), [vector_folder]*len(files), [model]*len(files))
 
         for total, non_embedded in results:
             total_instructions += total

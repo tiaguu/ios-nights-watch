@@ -5,6 +5,7 @@ import tempfile
 import zipfile
 from gensim.models import Word2Vec
 from preprocess import Preprocessor
+import numpy as np
 
 class iOSCorpus:
     def __init__(self, goodware_folder, malware_folder):
@@ -40,12 +41,16 @@ def main():
     parser.add_argument("goodware_folder", type=str, help="The folder with goodware files")
     parser.add_argument("malware_folder", type=str, help="The folder with malware files")
     parser.add_argument("model_folder", type=str, help="The folder with model files")
+    parser.add_argument("goodware_vector_folder", type=str, help="The folder where to store goodware vector files")
+    parser.add_argument("malware_vector_folder", type=str, help="The folder where to store malware vector files")
 
     args = parser.parse_args()
 
     goodware_folder = args.goodware_folder    
     malware_folder = args.malware_folder
     model_folder = args.model_folder
+    goodware_vector_folder = args.goodware_vector_folder    
+    malware_vector_folder = args.malware_vector_folder
 
     if not os.path.isdir(goodware_folder):
         print(f"Error: Path '{goodware_folder}' is not a valid directory.")
@@ -58,11 +63,100 @@ def main():
     if not os.path.isdir(model_folder):
         print(f"Error: Path '{model_folder}' is not a valid directory.")
         return
+    
+    if not os.path.isdir(goodware_vector_folder):
+        print(f"Error: Path '{goodware_vector_folder}' is not a valid directory.")
+        return
+    
+    if not os.path.isdir(malware_vector_folder):
+        print(f"Error: Path '{malware_vector_folder}' is not a valid directory.")
+        return
 
-    corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
-    word2vec_model = Word2Vec(corpus, vector_size=20, window=3, min_count=1, sample=0.0, workers=32, epochs=1) # For workers on linux use: nproc
+    model = Word2Vec.load(f"{model_folder}/ios2vec.model")
 
-    word2vec_model.save(os.path.join(model_folder, "ios2vec.model"))    
+    goodware_non_embedded_instructions = 0
+    goodware_total_instructions = 0
+
+    goodware_files = os.listdir(goodware_folder)
+    for file in goodware_files:
+        logging.info(f'Processing file: {file}')
+
+        path = os.path.join(goodware_folder, file)
+        application, extension = os.path.splitext(os.path.basename(path))
+        if extension == '.zip':
+            with tempfile.TemporaryDirectory() as temp_dir:
+                with zipfile.ZipFile(path, 'r') as zip_ref:
+                    zip_ref.extractall(temp_dir)
+
+                for temp_file in os.listdir(temp_dir):
+                    temp_root, temp_extension = os.path.splitext(temp_file)
+                    file_path = os.path.join(temp_dir, temp_file)
+                    if temp_extension == '.txt':
+                        app_tokenized_instructions = process_file(path, file)
+
+                        with open(f"{goodware_vector_folder}/{file}.txt", "w") as vector_file:
+                            for instruction in app_tokenized_instructions:
+                                goodware_total_instructions += 1
+
+                                token = instruction[0]
+                                if token in model.wv:
+                                    vector_file.write(f"{model.wv[token]}\n")
+                                else:
+                                    goodware_non_embedded_instructions += 1
+                                    vector_file.write(f"{np.zeros(model.vector_size)}\n")
+        
+        # self.files.append((file, os.path.join(goodware_folder, file)))
+
+    malware_non_embedded_instructions = 0
+    malware_total_instructions = 0
+
+    malware_files = os.listdir(malware_folder)
+    for file in malware_files:
+        logging.info(f'Processing file: {file}')
+
+        path = os.path.join(malware_folder, file)
+        application, extension = os.path.splitext(os.path.basename(path))
+        if extension == '.zip':
+            with tempfile.TemporaryDirectory() as temp_dir:
+                with zipfile.ZipFile(path, 'r') as zip_ref:
+                    zip_ref.extractall(temp_dir)
+
+                for temp_file in os.listdir(temp_dir):
+                    temp_root, temp_extension = os.path.splitext(temp_file)
+                    file_path = os.path.join(temp_dir, temp_file)
+                    if temp_extension == '.txt':
+                        app_tokenized_instructions = process_file(path, file)
+
+                        with open(f"{malware_vector_folder}/{file}.txt", "w") as vector_file:
+                            for instruction in app_tokenized_instructions:
+                                malware_total_instructions += 1
+
+                                token = instruction[0]
+                                if token in model.wv:
+                                    vector_file.write(f"{model.wv[token]}\n")
+                                else:
+                                    malware_non_embedded_instructions += 1
+                                    vector_file.write(f"{np.zeros(model.vector_size)}\n")
+        # self.files.append((file, os.path.join(malware_folder, file)))
+    
+    logging.info(f'Goodware Total Instructions: {goodware_total_instructions}')
+    logging.info(f'Goodware Non-Embedded Instructions: {goodware_non_embedded_instructions}')
+    logging.info(f'Goodware Non-Embedded %: {(goodware_non_embedded_instructions / goodware_total_instructions) * 100}%')
+
+    logging.info(f'Malware Total Instructions: {malware_total_instructions}')
+    logging.info(f'Malware Non-Embedded Instructions: {malware_non_embedded_instructions}')
+    logging.info(f'Malware Non-Embedded %: {(malware_non_embedded_instructions / malware_total_instructions) * 100}%')
+
+    total_instructions = goodware_total_instructions + malware_total_instructions
+    non_embedded_instructions = goodware_non_embedded_instructions + malware_non_embedded_instructions
+    logging.info(f'Total Instructions: {total_instructions}')
+    logging.info(f'Total Non-Embedded Instructions: {non_embedded_instructions}')
+    logging.info(f'Total Non-Embedded %: {(non_embedded_instructions / total_instructions) * 100}%')
+
+    # corpus = iOSCorpus(goodware_folder = goodware_folder, malware_folder = malware_folder)
+    # word2vec_model = Word2Vec(corpus, vector_size=20, window=3, min_count=1, sample=0.0, workers=32, epochs=1) # For workers on linux use: nproc
+
+    # word2vec_model.save(os.path.join(model_folder, "ios2vec.model"))    
 
 def process_file(path, file):
     application, extension = os.path.splitext(file)

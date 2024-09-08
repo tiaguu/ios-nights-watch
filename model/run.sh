@@ -17,4 +17,4 @@ docker rm $CONTAINER_NAME 2>/dev/null
 docker build -t $IMAGE_NAME .
 
 # Run the Docker container
-docker run -d --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $MODEL_DIR:/app/model $IMAGE_NAME
+docker run -d --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $MODEL_DIR:/app/model -v $GOODWARE_VECTOR_DIR:/app/goodware-vectors -v $MALWARE_VECTOR_DIR:/app/malware-vectors $IMAGE_NAME

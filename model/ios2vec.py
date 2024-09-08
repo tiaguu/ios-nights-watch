@@ -6,7 +6,6 @@ import zipfile
 from gensim.models import Word2Vec
 from preprocess import Preprocessor
 import numpy as np
-from concurrent.futures import ProcessPoolExecutor
 
 class iOSCorpus:
     def __init__(self, goodware_folder, malware_folder):
@@ -73,11 +72,8 @@ def process_folder_parallel(folder, vector_folder, model, label):
     total_instructions = 0
     non_embedded_instructions = 0
 
-    # Use ProcessPoolExecutor and map function
-    with ProcessPoolExecutor() as executor:
-        results = executor.map(process_zip_file, files, [folder]*len(files), [vector_folder]*len(files), [model]*len(files))
-
-    for total, non_embedded in results:
+    for file in files:
+        total, non_embedded = process_zip_file(file, folder, vector_folder, model)
         total_instructions += total
         non_embedded_instructions += non_embedded
     

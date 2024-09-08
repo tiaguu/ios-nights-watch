@@ -354,14 +354,12 @@ class Preprocessor():
 
         # Reading the file in chunks and processing them in parallel
         with open(input_file, 'r') as file:
-            with concurrent.futures.ProcessPoolExecutor() as executor:
-                while True:
-                    chunk = file.read(chunk_size)
-                    if not chunk:
-                        break
-                    # Submit each chunk to be processed in parallel
-                    future = executor.submit(process_chunk, chunk)
-                    # Collect the result
-                    final.extend(future.result())
+            while True:
+                chunk = file.read(chunk_size)
+                if not chunk:
+                    break
+
+                result = process_chunk(chunk)
+                final.extend(result)
 
         return final

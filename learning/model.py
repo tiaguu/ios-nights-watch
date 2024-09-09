@@ -94,7 +94,6 @@ def main():
             # Iterate over each chunk and train on it
             for X_train in X_train_chunks:
                 model.train_on_batch(np.array([X_train]), y_train)
-                logging.info(f'Trained on chunk')
             
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')

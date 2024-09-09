@@ -158,6 +158,7 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
         for line in vector_file:
             numbers = line.strip()[1:-1].split()
             vector = np.array(numbers, dtype=np.float32)
+            logging.info(f'Vector shape: {vector.shape}')
             embeddings.append(vector)
 
     if chunk_size == 0:
@@ -171,6 +172,10 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
                 chunks[-1].append(np.zeros(20))
         
         return np.array(chunks), np.array(labels)
+    
+def split_sequence_into_chunks(sequence, chunk_size):
+    """Splits the input sequence into smaller chunks of size `chunk_size`."""
+    return [sequence[i:i + chunk_size] for i in range(0, len(sequence), chunk_size)]
 
 def generate_embeddings_batch(file_paths, model, max_length):
     X_batch = []
@@ -217,10 +222,6 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50,
         
         # Return the padded chunks as the final input
         return np.array(chunks)
-
-def split_sequence_into_chunks(sequence, chunk_size):
-    """Splits the input sequence into smaller chunks of size `chunk_size`."""
-    return [sequence[i:i + chunk_size] for i in range(0, len(sequence), chunk_size)]
 
 def process_file(path):
     with open(path, 'r') as file:

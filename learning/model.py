@@ -149,6 +149,8 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     labels = []
     file_path, label = file_path_and_label
 
+    logging.info(f"Processing file: {file_path}")
+
     embeddings = []  # List to store chunks of arrays
     labels = []  # List to store chunks of labels
     current_chunk = []  # Temporary storage for the current chunk

@@ -3,7 +3,6 @@ from pyparsing import Word, alphanums, alphas, oneOf, Group, delimitedList, nest
 import string
 import random
 import logging
-import concurrent.futures
 
 class Preprocessor():
     def is_address(self, string):
@@ -118,138 +117,15 @@ class Preprocessor():
         random_string = ''.join(random.choice(characters) for _ in range(length))
         return random_string
 
-    # def clean_assembly_file(self, input_file):
-    #     with open(input_file, 'r') as file:
-    #         content = file.read()
-    #         return self.clean_assembly(input = content)
+    def clean_assembly_file(self, input_file):
+        with open(input_file, 'r') as file:
+            content = file.read()
+            return self.clean_assembly(input = content)
 
-    # def clean_assembly(self, input):
-    #     final = []
-    #     lines = input.split('\n')
-    #     operation_list = []
-    #     ignore_opcodes = {'.long', '.short', '.byte', 'nop', 'adr', 'adrp', 'tbl', 'tbx', 'dup', 'zip1', 
-    #                       'zip2', 'trn1', 'trn2', 'uzp1', 'uzp2', 'ld1', 'ld2', 'ld3', 
-    #                       'ld4', 'st1', 'st2', 'st3', 'st4', 'rbit', 'rev', 'rev16', 
-    #                       'rev32', 'rev64', 'fmov', 'fcvt', 'fcvtas', 'fcvtn', 'fcvtms', 
-    #                       'fcvtpu', 'fcvtzu', 'fabs', 'fneg', 'sqxtn', 'sqxtn2', 'uqxtn', 
-    #                       'uqxtn2', 'sqxtun', 'sqxtun2', 'addp', 'faddp', 'cmle', 'cmge', 
-    #                       'cmeq', 'cmgt', 'cmhi', 'cmhs', 'cnt', 'aesd', 'aese', 'aesimc',
-    #                       'msr', 'mrs', 'sys', 'tlbi', 'dcps1', 'dcps2', 'dcps3', 'hlt',
-    #                       'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur', 'ldrb', 'strb', 
-    #                       'ldrh', 'strh', 'add', 'sub', 'mul', 'fmul', 'fadd', 'fmla',
-    #                       'fmls', 'fcmla', 'sqdmulh', 'fmin', 'fmax', 'svc', 'brk', 'pacia', 
-    #                       'pacib', 'abs', 'ngc', 'ngcs', 'madd', 'mls', 'movi', 'lsl', 
-    #                       'lsr', 'asr', 'ror', 'clz', 'bic', 'eor', 'orn', 'and', 'orr', 
-    #                       'neg', 'negs', 'ldrsb', 'ldrsw', 'ldxp', 'stxp', 'stllr', 'ldclr', 
-    #                       'ldset', 'fsub', 'fcmp', 'fsqrt', 'fmadd', 'fmsub', 'fnmadd', 
-    #                       'fnmsub', 'frecpe', 'frsqrte', 'ushl', 'ushr', 'uqrshl', 'uqrshrn', 
-    #                       'uqadd', 'uqsub', 'pmull', 'pmull2', 'facgt', 'facge', 'fcsel', 
-    #                       'fccmp', 'sqdmull', 'uqshl', 'uqshrn', 'sqrshl', 'sqrshrn', 'sqshlu',
-    #                       'prfm', 'prfum', 'dmb', 'dsb', 'isb', 'sha256h', 'sha512h', 'sha1c', 
-    #                       'sha1su0', 'crc32'}
-        
-    #     # include_opcodes = [
-    #     #     'bl', 'b', 'cbnz', 'cbz', 'tbz', 'tbnz',  # Control flow
-    #     #     # 'ldr', 'str', 'ldp', 'stp', 'ldur', 'stur',  # Memory operations
-    #     #     # 'add', 'sub', 'mul', 'madd', 'msub',  # Arithmetic
-    #     #     # 'and', 'orr', 'eor', 'bic', 'lsl', 'lsr',  # Logical and shifts
-    #     #     # 'mrs', 'msr', 'sys', 'svc',  # System instructions
-    #     #     # 'fmul', 'fadd', 'fsub',  # Optional SIMD
-    #     #     # 'sha256h', 'crc32b'  # Cryptographic instructions (if needed)
-    #     # ]
-
-    #     # control_flow_opcodes
-    #     include_opcodes = [
-    #         # Unconditional Branches
-    #         'b', 'bl', 'bx', 'blx',
-            
-    #         # Conditional Branches
-    #         'b.eq', 'b.ne', 'b.lt', 'b.gt', 'b.le', 'b.ge', 'b.hi', 'b.lo', 'b.pl', 
-    #         'b.mi', 'b.vs', 'b.vc', 'b.cs', 'b.cc', 'b.al', 'b.nv',
-            
-    #         # Compare and Branch
-    #         'cbz', 'cbnz',
-            
-    #         # Test and Branch
-    #         'tbz', 'tbnz',
-            
-    #         # Return Instructions
-    #         'ret', 'eret',
-            
-    #         # Exception Generation
-    #         'svc', 'hvc', 'smc', 'brk', 'hlt',
-            
-    #         # Indirect Branching
-    #         'br', 'blr', 'braa', 'brab', 'retab',
-            
-    #         # Hints
-    #         'nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb'
-    #     ]
-
-    #     # include_opcodes = [
-    #     #     'msr', 'mul', 'adc', 'teq', 'ldm', 'orr', 'sbc',
-    #     #     'and', 'mvn', 'stc', 'stm', 'tst', 'bx', 'cmn',
-    #     #     'sub', 'cmp', 'str', 'mla', 'ldr', 'eor', 'b', 'mov'
-    #     # ]
-        
-    #     # Prepare a tuple for faster lookup with str.startswith()
-    #     ignore_opcodes_tuple = tuple(ignore_opcodes)
-    #     include_opcodes_tuple = tuple(include_opcodes)
-
-    #     opcodes = []
-
-    #     total_lines = 0
-    #     kept_lines = 0
-    #     for line in lines:
-    #         total_lines += 1
-
-    #         instruction = line.split('\t')
-    #         if self.is_address(instruction[0]):
-    #             if len(instruction) > 1:
-    #                 if self.is_address(instruction[1]):
-    #                     first_address = instruction[0]
-    #                     second_address = instruction[1]
-    #                     operation = instruction[2]
-    #                     if len(instruction) > 3:
-    #                         arguments = instruction[3].split('@')[0].split(';')[0].rstrip()
-    #                         arguments = self.split_ignoring_parentheses(instruction = arguments)
-    #                     else:
-    #                         arguments = []
-    #                 else:
-    #                     address = instruction[0]
-    #                     operation = instruction[1]
-    #                     if len(instruction) > 2:
-    #                         arguments = instruction[2].split('@')[0].split(';')[0].rstrip()
-    #                         arguments = self.split_ignoring_parentheses(instruction = arguments)
-    #                     else:
-    #                         arguments = []
-
-    #                 # Use str.startswith() with the tuple of ignore opcodes
-    #                 if operation.startswith(include_opcodes_tuple):
-    #                     instruction_tokenized = []
-    #                     instruction_tokenized.append(operation)
-    #                     if operation not in operation_list:
-    #                         operation_list.append(operation)
-
-    #                         if operation not in opcodes:
-    #                             opcodes.append(operation)
-
-    #                     for argument in arguments:
-    #                         instruction_tokenized.append(argument)
-                            
-    #                     kept_lines += 1
-    #                     final.append([' '.join(instruction_tokenized)])
-    #         else:
-    #             pass
-
-    #     return final
-
-
-
-    def clean_assembly_file(self, input_file, chunk_size=1024*1024):
-        # Final list for results
+    def clean_assembly(self, input):
         final = []
-
+        lines = input.split('\n')
+        operation_list = []
         ignore_opcodes = {'.long', '.short', '.byte', 'nop', 'adr', 'adrp', 'tbl', 'tbx', 'dup', 'zip1', 
                           'zip2', 'trn1', 'trn2', 'uzp1', 'uzp2', 'ld1', 'ld2', 'ld3', 
                           'ld4', 'st1', 'st2', 'st3', 'st4', 'rbit', 'rev', 'rev16', 
@@ -285,19 +161,26 @@ class Preprocessor():
         include_opcodes = [
             # Unconditional Branches
             'b', 'bl', 'bx', 'blx',
+            
             # Conditional Branches
             'b.eq', 'b.ne', 'b.lt', 'b.gt', 'b.le', 'b.ge', 'b.hi', 'b.lo', 'b.pl', 
             'b.mi', 'b.vs', 'b.vc', 'b.cs', 'b.cc', 'b.al', 'b.nv',
+            
             # Compare and Branch
             'cbz', 'cbnz',
+            
             # Test and Branch
             'tbz', 'tbnz',
+            
             # Return Instructions
             'ret', 'eret',
+            
             # Exception Generation
             'svc', 'hvc', 'smc', 'brk', 'hlt',
+            
             # Indirect Branching
             'br', 'blr', 'braa', 'brab', 'retab',
+            
             # Hints
             'nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb'
         ]
@@ -307,59 +190,55 @@ class Preprocessor():
         #     'and', 'mvn', 'stc', 'stm', 'tst', 'bx', 'cmn',
         #     'sub', 'cmp', 'str', 'mla', 'ldr', 'eor', 'b', 'mov'
         # ]
-
+        
+        # Prepare a tuple for faster lookup with str.startswith()
         ignore_opcodes_tuple = tuple(ignore_opcodes)
         include_opcodes_tuple = tuple(include_opcodes)
 
-        # Helper function to process each chunk
-        def process_chunk(chunk):
-            final_chunk = []
-            operation_list = []
-            opcodes = []
-            
-            for line in chunk.splitlines():
-                instruction = line.split('\t')
-                if self.is_address(instruction[0]):
-                    if len(instruction) > 1:
-                        if self.is_address(instruction[1]):
-                            first_address = instruction[0]
-                            second_address = instruction[1]
-                            operation = instruction[2]
-                            if len(instruction) > 3:
-                                arguments = instruction[3].split('@')[0].split(';')[0].rstrip()
-                                arguments = self.split_ignoring_parentheses(instruction=arguments)
-                            else:
-                                arguments = []
+        opcodes = []
+
+        total_lines = 0
+        kept_lines = 0
+        for line in lines:
+            total_lines += 1
+
+            instruction = line.split('\t')
+            if self.is_address(instruction[0]):
+                if len(instruction) > 1:
+                    if self.is_address(instruction[1]):
+                        first_address = instruction[0]
+                        second_address = instruction[1]
+                        operation = instruction[2]
+                        if len(instruction) > 3:
+                            arguments = instruction[3].split('@')[0].split(';')[0].rstrip()
+                            arguments = self.split_ignoring_parentheses(instruction = arguments)
                         else:
-                            address = instruction[0]
-                            operation = instruction[1]
-                            if len(instruction) > 2:
-                                arguments = instruction[2].split('@')[0].split(';')[0].rstrip()
-                                arguments = self.split_ignoring_parentheses(instruction=arguments)
-                            else:
-                                arguments = []
+                            arguments = []
+                    else:
+                        address = instruction[0]
+                        operation = instruction[1]
+                        if len(instruction) > 2:
+                            arguments = instruction[2].split('@')[0].split(';')[0].rstrip()
+                            arguments = self.split_ignoring_parentheses(instruction = arguments)
+                        else:
+                            arguments = []
 
-                        if operation.startswith(include_opcodes_tuple):
-                            instruction_tokenized = [operation]
-                            if operation not in operation_list:
-                                operation_list.append(operation)
-                                if operation not in opcodes:
-                                    opcodes.append(operation)
+                    # Use str.startswith() with the tuple of ignore opcodes
+                    if operation.startswith(include_opcodes_tuple):
+                        instruction_tokenized = []
+                        instruction_tokenized.append(operation)
+                        if operation not in operation_list:
+                            operation_list.append(operation)
 
-                            for argument in arguments:
-                                instruction_tokenized.append(argument)
+                            if operation not in opcodes:
+                                opcodes.append(operation)
 
-                            final_chunk.append(' '.join(instruction_tokenized))
-            return final_chunk
-
-        # Reading the file in chunks and processing them in parallel
-        with open(input_file, 'r') as file:
-            while True:
-                chunk = file.read(chunk_size)
-                if not chunk:
-                    break
-
-                result = process_chunk(chunk)
-                final.extend(result)
+                        for argument in arguments:
+                            instruction_tokenized.append(argument)
+                            
+                        kept_lines += 1
+                        final.append([' '.join(instruction_tokenized)])
+            else:
+                pass
 
         return final

@@ -36,9 +36,9 @@ def main():
     weights_folder = args.weights_folder
 
     # Load the trained Word2Vec model
-    ios2vec_model = Word2Vec.load(f"{ios2vec_folder}/ios2vec.model")
+    # ios2vec_model = Word2Vec.load(f"{ios2vec_folder}/ios2vec.model")
 
-    logging.info(f'Loaded ios2vec.model')
+    # logging.info(f'Loaded ios2vec.model')
 
     file_paths_and_labels = []
 
@@ -65,9 +65,10 @@ def main():
 
     # Define LSTM model
     max_length = 5  # Define the maximum length of sequences
+    vector_size = 20
 
     model = Sequential()
-    model.add(LSTM(64, input_shape=(None, ios2vec_model.vector_size), return_sequences=True))
+    model.add(LSTM(64, input_shape=(None, vector_size), return_sequences=True))
     model.add(LSTM(64))
     model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
 
@@ -195,6 +196,15 @@ def split_sequence_into_chunks(sequence, chunk_size):
     return [sequence[i:i + chunk_size] for i in range(0, len(sequence), chunk_size)]
 
 def process_file(path):
+    with open(path, 'r') as file:
+        while True:
+            chunk = file.read(chunk_size)
+            if not chunk:
+                break
+
+            result = process_chunk(chunk)
+            final.extend(result)
+
     application, extension = os.path.splitext(os.path.basename(path))
     if extension == '.zip':
         with tempfile.TemporaryDirectory() as temp_dir:

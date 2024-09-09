@@ -165,8 +165,6 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
 
             if len(vector) == 20:
                 embeddings.append(vector)
-                logging.info(f'Vector: {vector}')
-                logging.info(f'Vector shape: {np.array(vector).shape}')
                 vector = []
 
     if chunk_size == 0:

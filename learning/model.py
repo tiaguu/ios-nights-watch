@@ -158,7 +158,6 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     with open(file_path, 'r') as vector_file:
         vector = []
         for line in vector_file:
-            logging.info(f'Line: {line}')
             cleaned_str = line.replace('[', '').replace(']', '').strip()
             for num in cleaned_str.split():
                 vector.append(float(num))

@@ -157,9 +157,9 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     with open(file_path, 'r') as vector_file:
         for line in vector_file:
             # Remove the square brackets and split the string into individual components
-            str_array = str_array.strip('[]')  # Remove the brackets
-            str_elements = str_array.split(',')  # Split the string by commas
-            vector = [float(element) for element in str_elements]
+            remove_brackets = line.strip('[]')  # Remove the brackets
+            split_elements = remove_brackets.split(',')  # Split the string by commas
+            vector = [float(element) for element in split_elements]
             logging.info(f'Vector shape: {np.array(vector).shape}')
             embeddings.append(vector)
 

@@ -152,38 +152,25 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     logging.info(f"Processing file: {file_path}")
 
     embeddings = []  # List to store chunks of arrays
-    labels = []  # List to store chunks of labels
-    current_chunk = []  # Temporary storage for the current chunk
+    labels = [label]  # List to store chunks of labels
     
     with open(file_path, 'r') as vector_file:
-        if chunk_size != 0:
-            for i, line in enumerate(vector_file):
-                # Strip brackets and split the numbers into a list
-                numbers = line.strip()[1:-1].split()
-                logging.info(np.array(numbers, dtype=np.float32))
-                # Convert the list of strings to floats
-                current_chunk.append(np.array(numbers, dtype=np.float32))
-                
-                # When 500 lines have been processed, store the chunk and reset
-                if (i + 1) % chunk_size == 0:
-                    embeddings.append(np.array(current_chunk))
-                    labels.append(label)
-                    current_chunk = []  # Reset for the next chunk
-            
-            # Pad the last chunk with zeros if it is not empty and has less than 500 lines
-            if current_chunk:
-                while len(current_chunk) < chunk_size:
-                    current_chunk.append(np.zeros(20, dtype=np.float32))
-                embeddings.append(np.array(current_chunk))
-                labels.append(label)
-        else:
-            for i, line in enumerate(vector_file):
-                numbers = line.strip()[1:-1].split()
-                embeddings.append(np.array(numbers, dtype=np.float32))
-                labels.append(label)
+        for line in vector_file:
+            numbers = line.strip()[1:-1].split()
+            vector = np.array(numbers, dtype=np.float32)
+            embeddings.append(vector)
 
-    logging.info(np.array(embeddings).shape)
-    return np.array(embeddings), np.array(labels)
+    if chunk_size == 0:
+        return np.array(embeddings), np.array(labels)
+    else:
+        # Split the sequence into smaller chunks of size `chunk_size`
+        chunks = split_sequence_into_chunks(embeddings, chunk_size)
+
+        if len(chunks[-1]) < chunk_size:
+            for i in range(chunk_size - len(chunks[-1])):
+                chunks[-1].append(np.zeros(20))
+        
+        return np.array(chunks), np.array(labels)
 
 def generate_embeddings_batch(file_paths, model, max_length):
     X_batch = []

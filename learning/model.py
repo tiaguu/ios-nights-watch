@@ -88,7 +88,7 @@ def main():
         for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
-            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label, ios2vec_model, max_length)
+            X_train_chunks, y_train = get_embeddings_file(file_path_and_label)
 
             # Iterate over each chunk and train on it
             for X_train in X_train_chunks:
@@ -103,16 +103,16 @@ def main():
     logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
 
     # Evaluate the model
-    test_model(test_paths, model, ios2vec_model, max_length)
+    test_model(test_paths, model)
 
-def test_model(test_paths, model, embeddings_model, max_length):
+def test_model(test_paths, model):
     accuracies = []
     losses = []
     y_true = []  # Actual labels
     y_pred = []  # Predicted labels
 
     for test_sample in test_paths:
-        X_test, y_test = generate_embeddings_file(test_sample, embeddings_model, max_length, chunk_size=0)
+        X_test, y_test = get_embeddings_file(test_sample, chunk_size=0)
         
         # Make sure X_test is wrapped in an extra dimension for batch processing
         X_test = np.array([X_test])
@@ -144,6 +144,44 @@ def test_model(test_paths, model, embeddings_model, max_length):
     logging.info(f'Confusion Matrix:\n{cm}')
 
     return cm  # Return the confusion matrix if needed for further analysis
+
+def get_embeddings_file(file_path_and_label, chunk_size=500):
+    labels = []
+    file_path, label = file_path_and_label
+
+    embeddings = []  # List to store chunks of arrays
+    labels = []  # List to store chunks of labels
+    current_chunk = []  # Temporary storage for the current chunk
+    
+    with open(file_path, 'r') as vector_file:
+        if chunk_size != 0:
+            for i, line in enumerate(vector_file):
+                # Strip brackets and split the numbers into a list
+                numbers = line.strip()[1:-1].split()
+                logging.info(np.array(numbers, dtype=np.float32))
+                # Convert the list of strings to floats
+                current_chunk.append(np.array(numbers, dtype=np.float32))
+                
+                # When 500 lines have been processed, store the chunk and reset
+                if (i + 1) % chunk_size == 0:
+                    embeddings.append(np.array(current_chunk))
+                    labels.append(label)
+                    current_chunk = []  # Reset for the next chunk
+            
+            # Pad the last chunk with zeros if it is not empty and has less than 500 lines
+            if current_chunk:
+                while len(current_chunk) < chunk_size:
+                    current_chunk.append(np.zeros(20, dtype=np.float32))
+                embeddings.append(np.array(current_chunk))
+                labels.append(label)
+        else:
+            for i, line in enumerate(vector_file):
+                numbers = line.strip()[1:-1].split()
+                embeddings.append(np.array(numbers, dtype=np.float32))
+                labels.append(label)
+
+    logging.info(np.array(embeddings).shape)
+    return np.array(embeddings), np.array(labels)
 
 def generate_embeddings_batch(file_paths, model, max_length):
     X_batch = []
@@ -197,13 +235,8 @@ def split_sequence_into_chunks(sequence, chunk_size):
 
 def process_file(path):
     with open(path, 'r') as file:
-        while True:
-            chunk = file.read(chunk_size)
-            if not chunk:
-                break
-
-            result = process_chunk(chunk)
-            final.extend(result)
+        content = file.read()
+        
 
     application, extension = os.path.splitext(os.path.basename(path))
     if extension == '.zip':

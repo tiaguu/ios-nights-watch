@@ -11,6 +11,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
+import re
 
 def main():
     stream_handler = logging.StreamHandler()
@@ -156,10 +157,9 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     
     with open(file_path, 'r') as vector_file:
         for line in vector_file:
-            # Remove the square brackets and split the string into individual components
-            remove_brackets = line.strip('[]')  # Remove the brackets
-            split_elements = remove_brackets.split(',')  # Split the string by commas
-            vector = [float(element) for element in split_elements]
+            # Use a regular expression to extract floats (both standard and scientific notation)
+            float_strings = re.findall(r'[+-]?\d+\.\d+(?:[eE][+-]?\d+)?', line)
+            vector = [float(num) for num in float_strings]
             logging.info(f'Vector shape: {np.array(vector).shape}')
             embeddings.append(vector)
 

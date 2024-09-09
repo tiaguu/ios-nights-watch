@@ -157,9 +157,8 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     
     with open(file_path, 'r') as vector_file:
         for line in vector_file:
-            # Use a regular expression to extract floats (both standard and scientific notation)
-            float_strings = re.findall(r'[+-]?\d+\.\d+(?:[eE][+-]?\d+)?', line)
-            vector = [float(num) for num in float_strings]
+            cleaned_str = line.replace('[', '').replace(']', '').strip()
+            vector = [float(num) for num in cleaned_str.split()]
             logging.info(f'Vector shape: {np.array(vector).shape}')
             embeddings.append(vector)
 

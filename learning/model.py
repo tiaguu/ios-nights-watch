@@ -156,14 +156,18 @@ def get_embeddings_file(file_path_and_label, chunk_size=500):
     labels = [label]  # List to store chunks of labels
     
     with open(file_path, 'r') as vector_file:
+        vector = []
         for line in vector_file:
             logging.info(f'Line: {line}')
             cleaned_str = line.replace('[', '').replace(']', '').strip()
-            logging.info(f'Cleaned: {cleaned_str}')
-            vector = [float(num) for num in cleaned_str.split()]
-            logging.info(f'Vector: {vector}')
-            logging.info(f'Vector shape: {np.array(vector).shape}')
-            embeddings.append(vector)
+            for num in cleaned_str.split():
+                vector.append(float(num))
+
+            if len(vector) == 20:
+                embeddings.append(vector)
+                vector = []
+                logging.info(f'Vector: {vector}')
+                logging.info(f'Vector shape: {np.array(vector).shape}')
 
     if chunk_size == 0:
         return np.array(embeddings), np.array(labels)

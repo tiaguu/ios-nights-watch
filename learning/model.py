@@ -44,14 +44,14 @@ def main():
     file_paths_and_labels = []
 
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:50]
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:3]
     for file in goodware_files:
         filepath = os.path.join(goodware_folder, file)
         file_labeled = (filepath, 0)
         file_paths_and_labels.append(file_labeled)
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:50]
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:3]
     for file in malware_files:
         filepath = os.path.join(malware_folder, file)
         file_labeled = (filepath, 1)
@@ -66,7 +66,7 @@ def main():
 
     # Define LSTM model
     max_length = 5  # Define the maximum length of sequences
-    vector_size = 20
+    vector_size = 8
 
     model = Sequential()
     model.add(LSTM(64, input_shape=(None, vector_size), return_sequences=True))
@@ -89,7 +89,7 @@ def main():
         for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
-            X_train_chunks, y_train = get_embeddings_file(file_path_and_label)
+            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label)
 
             # Iterate over each chunk and train on it
             for X_train in X_train_chunks:
@@ -112,7 +112,7 @@ def test_model(test_paths, model):
     y_pred = []  # Predicted labels
 
     for test_sample in test_paths:
-        X_test, y_test = get_embeddings_file(test_sample, chunk_size=0)
+        X_test, y_test = generate_embeddings_file(test_sample, chunk_size=0)
         
         # Make sure X_test is wrapped in an extra dimension for batch processing
         X_test = np.array([X_test])
@@ -196,12 +196,12 @@ def generate_embeddings_batch(file_paths, model, max_length):
 def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=500):
     labels = []
     file_path, label = file_path_and_label
-    app_tokenized_instructions = process_file(file_path)
-    embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size = chunk_size)
+    vectors = process_file(file_path)
+    # embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size = chunk_size)
     labels.append(label)
-    logging.info(f'Embeddings: {np.array(embeddings).shape}')
+    logging.info(f'Embeddings: {np.array(vectors).shape}')
     logging.info(f'Labels: {np.array(labels).shape}')
-    return np.array(embeddings), np.array(labels)
+    return np.array(vectors), np.array(labels)
 
 def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=500):
     embeddings = []
@@ -228,10 +228,6 @@ def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50,
         return np.array(chunks)
 
 def process_file(path):
-    with open(path, 'r') as file:
-        content = file.read()
-        
-
     application, extension = os.path.splitext(os.path.basename(path))
     if extension == '.zip':
         with tempfile.TemporaryDirectory() as temp_dir:

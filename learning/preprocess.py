@@ -185,6 +185,19 @@ class Preprocessor():
             'nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb'
         ]
 
+        include_opcodes_dict = {
+            0 : ['b', 'bl', 'bx', 'blx'],
+            1 : ['b.eq', 'b.ne', 'b.lt', 'b.gt', 'b.le', 'b.ge', 'b.hi', 'b.lo', 'b.pl', 'b.mi', 'b.vs', 'b.vc', 'b.cs', 'b.cc', 'b.al', 'b.nv'],
+            2 : ['cbz', 'cbnz'],
+            3 : ['tbz', 'tbnz'],
+            4 : ['ret', 'eret'],
+            5 : ['svc', 'hvc', 'smc', 'brk', 'hlt'],
+            6 : ['br', 'blr', 'braa', 'brab', 'retab'],
+            7 : ['nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb']
+        }
+
+        opcode_to_key = {opcode: key for key, opcodes in include_opcodes_dict.items() for opcode in opcodes}
+
         # include_opcodes = [
         #     'msr', 'mul', 'adc', 'teq', 'ldm', 'orr', 'sbc',
         #     'and', 'mvn', 'stc', 'stm', 'tst', 'bx', 'cmn',
@@ -195,13 +208,8 @@ class Preprocessor():
         ignore_opcodes_tuple = tuple(ignore_opcodes)
         include_opcodes_tuple = tuple(include_opcodes)
 
-        opcodes = []
-
-        total_lines = 0
-        kept_lines = 0
+        vectors = []
         for line in lines:
-            total_lines += 1
-
             instruction = line.split('\t')
             if self.is_address(instruction[0]):
                 if len(instruction) > 1:
@@ -225,19 +233,20 @@ class Preprocessor():
 
                     # Use str.startswith() with the tuple of ignore opcodes
                     if operation.startswith(include_opcodes_tuple):
-                        instruction_tokenized = []
-                        instruction_tokenized.append(operation)
-                        if operation not in operation_list:
-                            operation_list.append(operation)
+                        opcode_key = opcode_to_key.get(operation)
+                        opcode_vector = [0, 0, 0, 0, 0, 0, 0, 0]
+                        opcode_vector[opcode_key] = 1
+                        final.append(opcode_vector)
 
-                            if operation not in opcodes:
-                                opcodes.append(operation)
+                        # instruction_tokenized = []
+                        # instruction_tokenized.append(operation)
+                        # if operation not in operation_list:
+                        #     operation_list.append(operation)
 
-                        for argument in arguments:
-                            instruction_tokenized.append(argument)
+                        # for argument in arguments:
+                        #     instruction_tokenized.append(argument)
                             
-                        kept_lines += 1
-                        final.append([' '.join(instruction_tokenized)])
+                        # final.append([' '.join(instruction_tokenized)])
             else:
                 pass
 

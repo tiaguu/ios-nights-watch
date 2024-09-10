@@ -196,7 +196,7 @@ def generate_embeddings_batch(file_paths, model, max_length):
 def generate_embeddings_file(file_path_and_label, chunk_size=50):
     labels = []
     file_path, label = file_path_and_label
-    vectors = [process_file(file_path)]
+    vectors = process_file(file_path)
     labels.append(label)
 
     if chunk_size == 0:

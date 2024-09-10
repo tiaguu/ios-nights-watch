@@ -89,12 +89,11 @@ def main():
         for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
-            X_train, y_train = generate_embeddings_file(file_path_and_label)
+            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label)
 
             # Iterate over each chunk and train on it
-            # for X_train in X_train_chunks:
-            #     model.train_on_batch(np.array([X_train]), y_train)
-            model.train_on_batch(X_train, y_train)
+            for X_train in X_train_chunks:
+                model.train_on_batch(np.array([X_train]), y_train)
             
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
@@ -146,7 +145,7 @@ def test_model(test_paths, model):
 
     return cm  # Return the confusion matrix if needed for further analysis
 
-def get_embeddings_file(file_path_and_label, chunk_size=500):
+def get_embeddings_file(file_path_and_label, chunk_size=50):
     labels = []
     file_path, label = file_path_and_label
 
@@ -194,17 +193,29 @@ def generate_embeddings_batch(file_paths, model, max_length):
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, chunk_size=500):
+def generate_embeddings_file(file_path_and_label, chunk_size=50):
     labels = []
     file_path, label = file_path_and_label
     vectors = [process_file(file_path)]
-    # embeddings = generate_embedding_for_app(app_tokenized_instructions, model, max_length, chunk_size = chunk_size)
     labels.append(label)
-    logging.info(f'Embeddings: {np.array(vectors).shape}')
-    logging.info(f'Labels: {np.array(labels).shape}')
-    return np.array(vectors), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=500):
+    if chunk_size == 0:
+        logging.info(f'Embeddings: {np.array(vectors).shape}')
+        logging.info(f'Labels: {np.array(labels).shape}')
+        return np.array(vectors), np.array(labels)
+    else:
+        chunks = split_sequence_into_chunks(vectors, chunk_size)
+
+        if len(chunks[-1]) < chunk_size:
+            for i in range(chunk_size - len(chunks[-1])):
+                chunks[-1].append(np.zeros(8))
+        
+        logging.info(f'Embeddings: {np.array(vectors).shape}')
+        logging.info(f'Labels: {np.array(labels).shape}')
+        # Return the padded chunks as the final input
+        return np.array(chunks), np.array(labels)
+
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=50):
     embeddings = []
     
     # Generate embeddings for the instructions

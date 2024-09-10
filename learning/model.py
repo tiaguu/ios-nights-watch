@@ -193,7 +193,7 @@ def generate_embeddings_batch(file_paths, model, max_length):
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, model, max_length, chunk_size=500):
+def generate_embeddings_file(file_path_and_label, chunk_size=500):
     labels = []
     file_path, label = file_path_and_label
     vectors = process_file(file_path)

@@ -12,6 +12,7 @@ from keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
 import re
+import tensorflow as tf
 
 def main():
     stream_handler = logging.StreamHandler()
@@ -93,7 +94,11 @@ def main():
 
             # Iterate over each chunk and train on it
             for X_train in X_train_chunks:
-                model.train_on_batch(np.array([X_train]), y_train)
+                X_train_tensor = tf.convert_to_tensor([X_train], dtype=tf.float32)
+                y_train_tensor = tf.convert_to_tensor(y_train, dtype=tf.float32)
+                
+                # Train on batch
+                model.train_on_batch(X_train_tensor, y_train_tensor)
             
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')
@@ -105,6 +110,16 @@ def main():
     # Evaluate the model
     test_model(test_paths, model)
 
+@tf.function(reduce_retracing=True)
+def evaluate_step(model, X_test, y_test):
+    # Model prediction
+    predictions = model.predict(X_test)
+    
+    # Model evaluation (loss and accuracy)
+    loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+    
+    return predictions, loss, accuracy
+
 def test_model(test_paths, model):
     accuracies = []
     losses = []
@@ -114,20 +129,18 @@ def test_model(test_paths, model):
     for test_sample in test_paths:
         X_test, y_test = generate_embeddings_file(test_sample, chunk_size=0)
         
-        # Make sure X_test is wrapped in an extra dimension for batch processing
-        X_test = np.array([X_test])
-
-        # Get model predictions
-        predictions = model.predict(X_test)
-        predicted_label = (predictions > 0.5).astype(int)  # Assuming binary classification with threshold 0.5
+        # Convert X_test and y_test to TensorFlow tensors
+        X_test_tensor = tf.convert_to_tensor([X_test], dtype=tf.float32)
+        y_test_tensor = tf.convert_to_tensor([y_test], dtype=tf.float32)
+        
+        # Call the evaluate step wrapped in tf.function
+        predictions, loss, accuracy = evaluate_step(model, X_test_tensor, y_test_tensor)
         
         # Append the actual and predicted labels
+        predicted_label = (predictions > 0.5).astype(int)  # Assuming binary classification with threshold 0.5
         y_true.append(y_test)
         y_pred.append(predicted_label[0][0])
 
-        # Evaluate the model on the single test instance
-        loss, accuracy = model.evaluate(X_test, np.array([y_test]), verbose=0)
-        
         # Collect the loss and accuracy for later averaging
         accuracies.append(accuracy)
         losses.append(loss)

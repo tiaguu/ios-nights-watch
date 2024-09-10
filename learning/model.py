@@ -89,11 +89,12 @@ def main():
         for i in range(0, len(train_paths)):
             logging.info(f'Running batch {str(i)}')
             file_path_and_label = train_paths[i]
-            X_train_chunks, y_train = generate_embeddings_file(file_path_and_label)
+            X_train, y_train = generate_embeddings_file(file_path_and_label)
 
             # Iterate over each chunk and train on it
-            for X_train in X_train_chunks:
-                model.train_on_batch(np.array([X_train]), y_train)
+            # for X_train in X_train_chunks:
+            #     model.train_on_batch(np.array([X_train]), y_train)
+            model.train_on_batch(X_train, y_train)
             
             logging.info(f'Trained on batch')
         logging.info(f'Epoch {epoch + 1} complete')

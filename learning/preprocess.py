@@ -232,7 +232,7 @@ class Preprocessor():
                             arguments = []
 
                     # Use str.startswith() with the tuple of ignore opcodes
-                    if operation.startswith(include_opcodes_tuple):
+                    if operation in include_opcodes_tuple:
                         opcode_key = opcode_to_key.get(operation)
                         opcode_vector = [0, 0, 0, 0, 0, 0, 0, 0]
                         opcode_vector[opcode_key] = 1

@@ -158,7 +158,7 @@ def test_model(test_paths, model):
 
     return cm  # Return the confusion matrix if needed for further analysis
 
-def get_embeddings_file(file_path_and_label, chunk_size=50):
+def get_embeddings_file(file_path_and_label, chunk_size=1000):
     labels = []
     file_path, label = file_path_and_label
 
@@ -206,7 +206,7 @@ def generate_embeddings_batch(file_paths, model, max_length):
 
     return np.array(X_batch), np.array(y_batch)
 
-def generate_embeddings_file(file_path_and_label, chunk_size=50):
+def generate_embeddings_file(file_path_and_label, chunk_size=1000):
     labels = []
     file_path, label = file_path_and_label
     vectors = process_file(file_path)
@@ -228,7 +228,7 @@ def generate_embeddings_file(file_path_and_label, chunk_size=50):
         # Return the padded chunks as the final input
         return np.array(chunks), np.array(labels)
 
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=50):
+def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=1000):
     embeddings = []
     
     # Generate embeddings for the instructions

@@ -173,7 +173,7 @@ def get_embeddings_file(file_path_and_label, chunk_size=50):
 
         if len(chunks[-1]) < chunk_size:
             for i in range(chunk_size - len(chunks[-1])):
-                chunks[-1].append(np.zeros(20))
+                chunks[-1].append(np.zeros(8))
         
         return np.array(chunks), np.array(labels)
     

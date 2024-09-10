@@ -223,7 +223,7 @@ def generate_embeddings_file(file_path_and_label, chunk_size=1000):
             for i in range(chunk_size - len(chunks[-1])):
                 chunks[-1].append(np.zeros(8))
         
-        logging.info(f'Embeddings: {np.array(vectors).shape}')
+        logging.info(f'Embeddings: {np.array(chunks).shape}')
         logging.info(f'Labels: {np.array(labels).shape}')
         # Return the padded chunks as the final input
         return np.array(chunks), np.array(labels)

@@ -131,6 +131,7 @@ def main():
     goodware_dir = os.listdir(goodware_folder)
     goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:3]
     for file in goodware_files:
+        logging.info(f'Processing file: {file}')
         filepath = os.path.join(goodware_folder, file)
         application, extension = os.path.splitext(os.path.basename(filepath))
 
@@ -148,6 +149,7 @@ def main():
     malware_dir = os.listdir(malware_folder)
     malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:3]
     for file in malware_files:
+        logging.info(f'Processing file: {file}')
         filepath = os.path.join(malware_folder, file)
         application, extension = os.path.splitext(os.path.basename(filepath))
 

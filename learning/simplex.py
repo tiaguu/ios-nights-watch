@@ -152,7 +152,7 @@ def main():
     logging.info(f"y: {y}")
 
     # Assuming X and y are pandas DataFrames/Series
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    kf = KFold(n_splits=5, shuffle=True, random_state=41)
 
     # To store the accuracy results for each algorithm
     rf_acc_list = []
@@ -203,7 +203,7 @@ def main():
         dt_acc_list.append(dt_acc)
 
         # 6. Deep Neural Network
-        dnn = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=500, random_state=42)
+        dnn = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=500, random_state=41)
         dnn.fit(X_train, y_train)
         dnn_pred = dnn.predict(X_test)
         dnn_acc = accuracy_score(y_test, dnn_pred)

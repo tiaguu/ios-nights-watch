@@ -100,3 +100,6 @@ def get_number_lines_file(application):
     with open('files_line.json', 'r') as file_stats:
         stats = json.load(file_stats)
         return stats[application]['lines']
+    
+if __name__ == "__main__":
+    main()

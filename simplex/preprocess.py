@@ -188,6 +188,6 @@ class Preprocessor():
             else:
                 pass
 
-        logging.info(f'Kept {(kept_lines / total_lines) * 100}% of total lines')
+        logging.info(f'Kept {int((kept_lines / total_lines) * 100)}% of total lines')
 
         return opcodes

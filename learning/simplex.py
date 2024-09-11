@@ -133,7 +133,7 @@ def main():
         for key in training_row.keys():
             training_row[key] = round(training_row[key] / nr_lines, 3)
 
-        training_row['label'] = 0
+        training_row['label'] = 1
 
         logging.info(training_row)
 

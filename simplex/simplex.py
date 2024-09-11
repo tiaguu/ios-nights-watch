@@ -145,7 +145,10 @@ def main():
                     if temp_extension == '.txt':
                         txt_path = os.path.join(temp_dir, temp_file)
                         opcodes = Preprocessor().get_opcodes_file(txt_path)
-                        logging.info(opcodes)
+
+                        with open(f"{goodware_opcodes_folder}/{application}.txt", "w") as opcode_file:
+                            for opcode in opcodes:
+                                opcode_file.write(f"{opcode}\n")
 
     malware_dir = os.listdir(malware_folder)
     malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:3]
@@ -165,6 +168,9 @@ def main():
                         txt_path = os.path.join(temp_dir, temp_file)
                         opcodes = Preprocessor().get_opcodes_file(txt_path)
 
+                        with open(f"{malware_opcodes_folder}/{application}.txt", "w") as opcode_file:
+                            for opcode in opcodes:
+                                opcode_file.write(f"{opcode}\n")
 
 if __name__ == "__main__":
     main()

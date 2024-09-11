@@ -3,6 +3,7 @@ import argparse
 import os
 import json
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -10,6 +11,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import KFold
 
 def main():
     stream_handler = logging.StreamHandler()
@@ -148,44 +150,69 @@ def main():
     logging.info(f"X: {X}")
     logging.info(f"y: {y}")
 
-    # Split into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Assuming X and y are your features and labels
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
-    # 1. Random Forest
-    rf = RandomForestClassifier()
-    rf.fit(X_train, y_train)
-    rf_pred = rf.predict(X_test)
-    rf_acc = accuracy_score(y_test, rf_pred)
+    # To store the accuracy results for each algorithm
+    rf_acc_list = []
+    knn_acc_list = []
+    nb_acc_list = []
+    svm_acc_list = []
+    dt_acc_list = []
 
-    # 2. K-Nearest Neighbor
-    knn = KNeighborsClassifier()
-    knn.fit(X_train, y_train)  # Use scaled features
-    knn_pred = knn.predict(X_test)
-    knn_acc = accuracy_score(y_test, knn_pred)
+    # 5-Fold Cross-validation
+    for train_index, test_index in kf.split(X):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
 
-    # 3. Naive Bayes
-    nb = GaussianNB()
-    nb.fit(X_train, y_train)
-    nb_pred = nb.predict(X_test)
-    nb_acc = accuracy_score(y_test, nb_pred)
+        # 1. Random Forest
+        rf = RandomForestClassifier()
+        rf.fit(X_train, y_train)
+        rf_pred = rf.predict(X_test)
+        rf_acc = accuracy_score(y_test, rf_pred)
+        rf_acc_list.append(rf_acc)
 
-    # 4. Support Vector Machine
-    svm = SVC()
-    svm.fit(X_train, y_train)
-    svm_pred = svm.predict(X_test)
-    svm_acc = accuracy_score(y_test, svm_pred)
+        # 2. K-Nearest Neighbor
+        knn = KNeighborsClassifier()
+        knn.fit(X_train, y_train)
+        knn_pred = knn.predict(X_test)
+        knn_acc = accuracy_score(y_test, knn_pred)
+        knn_acc_list.append(knn_acc)
 
-    # 5. Decision Tree
-    dt = DecisionTreeClassifier()
-    dt.fit(X_train, y_train)
-    dt_pred = dt.predict(X_test)
-    dt_acc = accuracy_score(y_test, dt_pred)
+        # 3. Naive Bayes
+        nb = GaussianNB()
+        nb.fit(X_train, y_train)
+        nb_pred = nb.predict(X_test)
+        nb_acc = accuracy_score(y_test, nb_pred)
+        nb_acc_list.append(nb_acc)
 
-    logging.info(f"Random Forest Accuracy: {rf_acc}")
-    logging.info(f"KNN Accuracy: {knn_acc}")
-    logging.info(f"Naive Bayes Accuracy: {nb_acc}")
-    logging.info(f"SVM Accuracy: {svm_acc}")
-    logging.info(f"Decision Tree Accuracy: {dt_acc}")
+        # 4. Support Vector Machine
+        svm = SVC()
+        svm.fit(X_train, y_train)
+        svm_pred = svm.predict(X_test)
+        svm_acc = accuracy_score(y_test, svm_pred)
+        svm_acc_list.append(svm_acc)
+
+        # 5. Decision Tree
+        dt = DecisionTreeClassifier()
+        dt.fit(X_train, y_train)
+        dt_pred = dt.predict(X_test)
+        dt_acc = accuracy_score(y_test, dt_pred)
+        dt_acc_list.append(dt_acc)
+
+    # Average accuracy across the 5 folds for each algorithm
+    rf_avg_acc = np.mean(rf_acc_list)
+    knn_avg_acc = np.mean(knn_acc_list)
+    nb_avg_acc = np.mean(nb_acc_list)
+    svm_avg_acc = np.mean(svm_acc_list)
+    dt_avg_acc = np.mean(dt_acc_list)
+
+    # Log the average accuracies
+    logging.info(f"Random Forest Average Accuracy: {rf_avg_acc}")
+    logging.info(f"KNN Average Accuracy: {knn_avg_acc}")
+    logging.info(f"Naive Bayes Average Accuracy: {nb_avg_acc}")
+    logging.info(f"SVM Average Accuracy: {svm_avg_acc}")
+    logging.info(f"Decision Tree Average Accuracy: {dt_avg_acc}")
 
 def get_number_lines_file(application):
     with open('file_lines.json', 'r') as file_stats:

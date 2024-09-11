@@ -129,7 +129,7 @@ def main():
         return
     
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:50]
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))
     for file in goodware_files:
         logging.info(f'Processing file: {file}')
         filepath = os.path.join(goodware_folder, file)
@@ -154,7 +154,7 @@ def main():
                                     opcode_file.write(f"{opcode}\n")
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:50]
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))
     for file in malware_files:
         logging.info(f'Processing file: {file}')
         filepath = os.path.join(malware_folder, file)

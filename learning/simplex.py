@@ -71,7 +71,7 @@ def main():
     
     goodware_opcodes_dir = os.listdir(goodware_opcodes_folder)
     goodware_opcodes_files = sorted(goodware_opcodes_dir, key=lambda x: os.path.getsize(os.path.join(goodware_opcodes_folder, x)))
-    for file in goodware_opcodes_files:
+    for file in goodware_opcodes_files[:1]:
         logging.info(f'Processing file: {file}')
         opcodes_count = {}
         for opcode in all_opcodes:
@@ -87,7 +87,9 @@ def main():
             content = file.read()
             for line in content:
                 opcode = line.strip()
+                logging.info(opcode)
                 if opcode in all_opcodes:
+                    logging.info('IN')
                     opcodes_count[opcode] += 1
 
         # for key in opcodes_count.keys():

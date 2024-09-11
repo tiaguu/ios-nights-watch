@@ -84,8 +84,7 @@ def main():
         logging.info(f'Number of lines: {nr_lines}')
 
         with open(f'{goodware_opcodes_folder}/{file}', 'r') as file:
-            content = file.readlines()
-            for line in content:
+            for line in file.readlines():
                 opcode = line
                 logging.info(opcode)
                 if opcode in all_opcodes:

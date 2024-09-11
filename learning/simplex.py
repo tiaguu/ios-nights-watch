@@ -84,7 +84,7 @@ def main():
         logging.info(f'Number of lines: {nr_lines}')
 
         with open(f'{goodware_opcodes_folder}/{file}', 'r') as file:
-            content = file.read()
+            content = file.readlines()
             for line in content:
                 opcode = line
                 logging.info(opcode)

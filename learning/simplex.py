@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import KFold
 
@@ -159,6 +160,7 @@ def main():
     nb_acc_list = []
     svm_acc_list = []
     dt_acc_list = []
+    dnn_acc_list = []
 
     # 5-Fold Cross-validation
     for train_index, test_index in kf.split(X):
@@ -200,12 +202,20 @@ def main():
         dt_acc = accuracy_score(y_test, dt_pred)
         dt_acc_list.append(dt_acc)
 
+        # 6. Deep Neural Network
+        dnn = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=500, random_state=42)
+        dnn.fit(X_train, y_train)
+        dnn_pred = dnn.predict(X_test)
+        dnn_acc = accuracy_score(y_test, dnn_pred)
+        dnn_acc_list.append(dnn_acc)
+
     # Average accuracy across the 5 folds for each algorithm
     rf_avg_acc = np.mean(rf_acc_list)
     knn_avg_acc = np.mean(knn_acc_list)
     nb_avg_acc = np.mean(nb_acc_list)
     svm_avg_acc = np.mean(svm_acc_list)
     dt_avg_acc = np.mean(dt_acc_list)
+    dnn_avg_acc = np.mean(dnn_acc_list)
 
     # Log the average accuracies
     logging.info(f"Random Forest Average Accuracy: {rf_avg_acc}")
@@ -213,6 +223,7 @@ def main():
     logging.info(f"Naive Bayes Average Accuracy: {nb_avg_acc}")
     logging.info(f"SVM Average Accuracy: {svm_avg_acc}")
     logging.info(f"Decision Tree Average Accuracy: {dt_avg_acc}")
+    logging.info(f"Deep Neural Network Average Accuracy: {dnn_avg_acc}")
 
 def get_number_lines_file(application):
     with open('file_lines.json', 'r') as file_stats:

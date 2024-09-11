@@ -86,7 +86,7 @@ def main():
         with open(f'{goodware_opcodes_folder}/{file}', 'r') as file:
             content = file.read()
             for line in content:
-                opcode = line.strip()
+                opcode = line
                 logging.info(opcode)
                 if opcode in all_opcodes:
                     logging.info('IN')

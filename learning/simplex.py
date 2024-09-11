@@ -71,7 +71,7 @@ def main():
     
     goodware_opcodes_dir = os.listdir(goodware_opcodes_folder)
     goodware_opcodes_files = sorted(goodware_opcodes_dir, key=lambda x: os.path.getsize(os.path.join(goodware_opcodes_folder, x)))
-    for file in goodware_opcodes_files[:50]:
+    for file in goodware_opcodes_files:
         logging.info(f'Processing file: {file}')
         opcodes_count = {}
         for opcode in all_opcodes:
@@ -91,7 +91,33 @@ def main():
                     opcodes_count[opcode] += 1
 
         for key in opcodes_count.keys():
-            opcodes_count[key] = round(opcodes_count[key] / nr_lines, 2)
+            opcodes_count[key] = round(opcodes_count[key] / nr_lines, 3)
+
+        logging.info(opcodes_count)
+
+    malware_opcodes_dir = os.listdir(malware_opcodes_folder)
+    malware_opcodes_files = sorted(malware_opcodes_dir, key=lambda x: os.path.getsize(os.path.join(malware_opcodes_folder, x)))
+    for file in malware_opcodes_files:
+        logging.info(f'Processing file: {file}')
+        opcodes_count = {}
+        for opcode in all_opcodes:
+            opcodes_count[opcode] = 0
+
+        application, extension = os.path.splitext(os.path.basename(file))
+        logging.info(f'Application name: {application}')
+
+        nr_lines = get_number_lines_file(application)
+        logging.info(f'Number of lines: {nr_lines}')
+
+        with open(f'{malware_opcodes_folder}/{file}', 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                opcode = line.strip()
+                if opcode in all_opcodes:
+                    opcodes_count[opcode] += 1
+
+        for key in opcodes_count.keys():
+            opcodes_count[key] = round(opcodes_count[key] / nr_lines, 3)
 
         logging.info(opcodes_count)
 

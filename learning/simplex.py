@@ -90,8 +90,8 @@ def main():
                 if opcode in all_opcodes:
                     opcodes_count[opcode] += 1
 
-        for key in opcodes_count.keys():
-            opcodes_count[key] = round(opcodes_count[key] / nr_lines, 2)
+        # for key in opcodes_count.keys():
+        #     opcodes_count[key] = round(opcodes_count[key] / nr_lines, 2)
 
         logging.info(opcodes_count)
 

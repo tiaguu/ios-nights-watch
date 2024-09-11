@@ -129,48 +129,54 @@ def main():
         return
     
     goodware_dir = os.listdir(goodware_folder)
-    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:3]
+    goodware_files = sorted(goodware_dir, key=lambda x: os.path.getsize(os.path.join(goodware_folder, x)))[:50]
     for file in goodware_files:
         logging.info(f'Processing file: {file}')
         filepath = os.path.join(goodware_folder, file)
         application, extension = os.path.splitext(os.path.basename(filepath))
 
-        if extension == '.zip':
-            with tempfile.TemporaryDirectory() as temp_dir:
-                with zipfile.ZipFile(filepath, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
+        opcodes_files = os.listdir(goodware_opcodes_folder)
+        if f"{application}.txt" not in opcodes_files:
 
-                for temp_file in os.listdir(temp_dir):
-                    temp_root, temp_extension = os.path.splitext(temp_file)
-                    if temp_extension == '.txt':
-                        txt_path = os.path.join(temp_dir, temp_file)
-                        opcodes = Preprocessor().get_opcodes_file(txt_path)
+            if extension == '.zip':
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    with zipfile.ZipFile(filepath, 'r') as zip_ref:
+                        zip_ref.extractall(temp_dir)
 
-                        with open(f"{goodware_opcodes_folder}/{application}.txt", "w") as opcode_file:
-                            for opcode in opcodes:
-                                opcode_file.write(f"{opcode}\n")
+                    for temp_file in os.listdir(temp_dir):
+                        temp_root, temp_extension = os.path.splitext(temp_file)
+                        if temp_extension == '.txt':
+                            txt_path = os.path.join(temp_dir, temp_file)
+                            opcodes = Preprocessor().get_opcodes_file(txt_path)
+
+                            with open(f"{goodware_opcodes_folder}/{application}.txt", "w") as opcode_file:
+                                for opcode in opcodes:
+                                    opcode_file.write(f"{opcode}\n")
 
     malware_dir = os.listdir(malware_folder)
-    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:3]
+    malware_files = sorted(malware_dir, key=lambda x: os.path.getsize(os.path.join(malware_folder, x)))[:50]
     for file in malware_files:
         logging.info(f'Processing file: {file}')
         filepath = os.path.join(malware_folder, file)
         application, extension = os.path.splitext(os.path.basename(filepath))
 
-        if extension == '.zip':
-            with tempfile.TemporaryDirectory() as temp_dir:
-                with zipfile.ZipFile(filepath, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
+        opcodes_files = os.listdir(malware_opcodes_folder)
+        if f"{application}.txt" not in opcodes_files:
 
-                for temp_file in os.listdir(temp_dir):
-                    temp_root, temp_extension = os.path.splitext(temp_file)
-                    if temp_extension == '.txt':
-                        txt_path = os.path.join(temp_dir, temp_file)
-                        opcodes = Preprocessor().get_opcodes_file(txt_path)
+            if extension == '.zip':
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    with zipfile.ZipFile(filepath, 'r') as zip_ref:
+                        zip_ref.extractall(temp_dir)
 
-                        with open(f"{malware_opcodes_folder}/{application}.txt", "w") as opcode_file:
-                            for opcode in opcodes:
-                                opcode_file.write(f"{opcode}\n")
+                    for temp_file in os.listdir(temp_dir):
+                        temp_root, temp_extension = os.path.splitext(temp_file)
+                        if temp_extension == '.txt':
+                            txt_path = os.path.join(temp_dir, temp_file)
+                            opcodes = Preprocessor().get_opcodes_file(txt_path)
+
+                            with open(f"{malware_opcodes_folder}/{application}.txt", "w") as opcode_file:
+                                for opcode in opcodes:
+                                    opcode_file.write(f"{opcode}\n")
 
 if __name__ == "__main__":
     main()

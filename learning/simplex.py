@@ -150,7 +150,7 @@ def main():
     logging.info(f"X: {X}")
     logging.info(f"y: {y}")
 
-    # Assuming X and y are your features and labels
+    # Assuming X and y are pandas DataFrames/Series
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
     # To store the accuracy results for each algorithm
@@ -162,8 +162,8 @@ def main():
 
     # 5-Fold Cross-validation
     for train_index, test_index in kf.split(X):
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
+        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
         # 1. Random Forest
         rf = RandomForestClassifier()

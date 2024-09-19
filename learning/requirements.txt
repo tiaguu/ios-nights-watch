@@ -4,3 +4,4 @@ gensim==4.3.3
 scikit-learn==1.5.1
 tensorflow==2.17.0
 pandas==2.2.2
+tensorflow-rocm==2.14.0.600

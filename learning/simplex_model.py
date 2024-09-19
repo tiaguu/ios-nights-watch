@@ -14,6 +14,8 @@ import re
 import tensorflow as tf
 
 def main():
+    logging.info("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+    
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
 

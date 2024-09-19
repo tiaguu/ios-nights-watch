@@ -17,4 +17,4 @@ docker rm $CONTAINER_NAME 2>/dev/null
 docker build -t $IMAGE_NAME .
 
 # Run the Docker container
-docker run -d --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $GOODWARE_OPCODES_DIR:/app/goodware-opcodes -v $MALWARE_OPCODES_DIR:/app/malware-opcodes $IMAGE_NAME
+docker run -d -p 8000:8000 --name $CONTAINER_NAME -v $MALWARE_DIR:/app/malware -v $GOODWARE_DIR:/app/goodware -v $GOODWARE_OPCODES_DIR:/app/goodware-opcodes -v $MALWARE_OPCODES_DIR:/app/malware-opcodes $IMAGE_NAME

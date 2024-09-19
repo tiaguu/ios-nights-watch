@@ -15,4 +15,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "simplex.py", "/app/goodware", "/app/malware", "/app/goodware-opcodes", "/app/malware-opcodes"]
+CMD ["python", "simplex_model.py", "/app/goodware", "/app/malware", "/app/goodware-opcodes", "/app/malware-opcodes"]

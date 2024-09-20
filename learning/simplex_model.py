@@ -246,4 +246,5 @@ def process_file(path):
                     return Preprocessor().clean_assembly_file(file_path)
 
 if __name__ == "__main__":
+    logging.info("Running")
     main()

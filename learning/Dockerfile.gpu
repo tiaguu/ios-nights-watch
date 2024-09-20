@@ -1,10 +1,11 @@
-FROM python:3.9-slim
+FROM ubuntu:20.04
 
 # Set the working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    python3-pip \
     gcc \
     libpq5 \
     libpq-dev \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 # Add the ROCm repository and GPG key
 RUN wget -qO - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - \
-    && echo "deb [arch=amd64] http://repo.radeon.com/rocm/apt/5.3/ ubuntu main" | tee /etc/apt/sources.list.d/rocm.list
+    && echo "deb [arch=amd64] http://repo.radeon.com/rocm/apt/5.3/ focal main" | tee /etc/apt/sources.list.d/rocm.list
 
 # Install ROCm libraries
 RUN apt-get update && apt-get install -y \
@@ -27,7 +28,7 @@ ENV LD_LIBRARY_PATH=/opt/rocm/lib:$LD_LIBRARY_PATH
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
@@ -36,4 +37,4 @@ COPY . .
 EXPOSE 8000
 
 # Start the application
-CMD ["python", "simplex_model.py"]
+CMD ["python3", "simplex_model.py"]

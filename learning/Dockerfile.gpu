@@ -1,10 +1,14 @@
 FROM ubuntu:20.04
 
+# Set the environment variable to prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Set the working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    tzdata \
     python3-pip \
     gcc \
     libpq5 \
@@ -13,6 +17,9 @@ RUN apt-get update && apt-get install -y \
     gnupg2 \
     curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Set timezone (optional, modify as needed)
+RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 
 # Add the ROCm repository and GPG key
 RUN wget -qO - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - \

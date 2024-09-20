@@ -35,9 +35,13 @@ RUN apt-get install -y rocm
 # Set up Python 3.10 virtual environment
 RUN python3.10 -m venv /app/venv
 
-# Download the TensorFlow ROCm .whl file and install it
-RUN wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.2/tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl \
-    && /app/venv/bin/pip install tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl
+# # Download the TensorFlow ROCm .whl file and install it
+# RUN wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.2/tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl \
+#     && /app/venv/bin/pip install tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl
+
+# Activate virtual environment and install PyTorch with ROCm support
+RUN /app/venv/bin/pip install --upgrade pip \
+    && /app/venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2
 
 # Copy and install Python dependencies
 COPY requirements.txt .

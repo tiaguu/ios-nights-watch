@@ -16,244 +16,111 @@ import zipfile
 from preprocess import Preprocessor
 import numpy as np
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from sklearn.metrics import confusion_matrix
-import re
-import tensorflow as tf
+
+# PyTorch model definition
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
+        self.sigmoid = nn.Sigmoid()  # For binary classification
+
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        out = self.fc(out[:, -1, :])  # Taking the output from the last time step
+        return self.sigmoid(out)
 
 def main():
-    logging.info("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
-    
+    # Set up logging
+    logging.info("CUDA Available: " + str(torch.cuda.is_available()))
+
+    # Logging configuration
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
-
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers= [stream_handler]
-    )
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[stream_handler])
 
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
 
     download_url = 'http://95.168.166.236:8000/download/opcodes'
-
     goodware_urls = [f'{download_url}/goodware/{x}' for x in range(10)]
     malware_urls = [f'{download_url}/malware/{x}' for x in range(10)]
-
     urls = goodware_urls + malware_urls
 
     # Train/test split
     train_paths, test_paths = train_test_split(urls, test_size=0.2, random_state=42)
-
     logging.info('Separated training and testing')
     logging.info(f'Training: {len(train_paths)}')
     logging.info(f'Testing: {len(test_paths)}')
 
-    logging.info(train_paths)
-    logging.info(test_paths)
+    # Model hyperparameters
+    input_size = 8
+    hidden_size = 64
+    output_size = 1  # Binary classification
+    max_length = 5
 
-    # Define LSTM model
-    max_length = 5  # Define the maximum length of sequences
-    vector_size = 8
+    # Initialize the model
+    model = LSTMModel(input_size, hidden_size, output_size)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
 
-    model = Sequential()
-    model.add(LSTM(64, input_shape=(None, vector_size), return_sequences=True))
-    model.add(LSTM(64))
-    model.add(Dense(1, activation='sigmoid'))  # Assuming binary classification
+    # Define loss and optimizer
+    criterion = nn.BCELoss()  # Binary Cross Entropy for binary classification
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    logging.info(f'Defined the model')
+    # Dummy training loop (You can replace it with actual data loading)
+    for epoch in range(2):  # Replace with actual number of epochs
+        logging.info(f'Starting epoch {epoch + 1}')
+        for i, train_path in enumerate(train_paths):
+            X_train, y_train = generate_embeddings_file(train_path)
+            X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
+            y_train = torch.tensor(y_train, dtype=torch.float32).to(device)
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-
-    logging.info(f'Compiled the model')
-
-    # # Incremental training setup
-    # batch_size = 1
-    # num_epochs = 1
-
-    # for epoch in range(num_epochs):
-    #     logging.info(f'Running epoch {epoch + 1}')
-    #     np.random.shuffle(train_paths)  # Shuffle training data each epoch
-    #     for i in range(0, len(train_paths)):
-    #         logging.info(f'Running batch {str(i)}')
-    #         file_path_and_label = train_paths[i]
-    #         X_train_chunks, y_train = generate_embeddings_file(file_path_and_label)
-
-    #         # Iterate over each chunk and train on it
-    #         for X_train in X_train_chunks:
-    #             X_train_tensor = tf.convert_to_tensor([X_train], dtype=tf.float32)
-    #             y_train_tensor = tf.convert_to_tensor(y_train, dtype=tf.float32)
-                
-    #             # Train on batch
-    #             model.train_on_batch(X_train_tensor, y_train_tensor)
+            # Forward pass
+            outputs = model(X_train)
+            loss = criterion(outputs.squeeze(), y_train)
             
-    #         logging.info(f'Trained on batch')
-    #     logging.info(f'Epoch {epoch + 1} complete')
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-    # # Save model weights
-    # model.save_weights(f'{weights_folder}/lstm_model.weights.h5')
-    # logging.info(f'Model weights saved to {weights_folder}/lstm_model.weights.h5')
-
-    # # Evaluate the model
-    # test_model(test_paths, model)
-
-@tf.function(reduce_retracing=True)
-def evaluate_step(model, X_test, y_test):
-    # Model prediction
-    predictions = model.predict(X_test)
+            logging.info(f'Epoch [{epoch+1}], Batch [{i+1}/{len(train_paths)}], Loss: {loss.item():.4f}')
     
-    # Model evaluation (loss and accuracy)
-    loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
-    
-    return predictions, loss, accuracy
+    logging.info('Training complete')
+    test_model(test_paths, model)
 
 def test_model(test_paths, model):
+    model.eval()  # Set model to evaluation mode
     accuracies = []
-    losses = []
-    y_true = []  # Actual labels
-    y_pred = []  # Predicted labels
+    y_true = []
+    y_pred = []
 
-    for test_sample in test_paths:
-        X_test, y_test = generate_embeddings_file(test_sample, chunk_size=0)
-        
-        # Convert X_test and y_test to TensorFlow tensors
-        X_test_tensor = tf.convert_to_tensor([X_test], dtype=tf.float32)
-        y_test_tensor = tf.convert_to_tensor([y_test], dtype=tf.float32)
-        
-        # Call the evaluate step wrapped in tf.function
-        predictions, loss, accuracy = evaluate_step(model, X_test_tensor, y_test_tensor)
-        
-        # Append the actual and predicted labels
-        predicted_label = (predictions > 0.5).astype(int)  # Assuming binary classification with threshold 0.5
-        y_true.append(y_test)
-        y_pred.append(predicted_label[0][0])
+    with torch.no_grad():
+        for test_sample in test_paths:
+            X_test, y_test = generate_embeddings_file(test_sample)
+            X_test = torch.tensor(X_test, dtype=torch.float32)
+            y_test = torch.tensor(y_test, dtype=torch.float32)
 
-        # Collect the loss and accuracy for later averaging
-        accuracies.append(accuracy)
-        losses.append(loss)
+            outputs = model(X_test)
+            predicted = (outputs > 0.5).float()  # Binary classification threshold
+            y_true.append(y_test.item())
+            y_pred.append(predicted.item())
 
-    # Calculate the average accuracy and loss over all test samples
-    average_accuracy = np.mean(accuracies)
-    average_loss = np.mean(losses)
-
-    logging.info(f'Average Loss: {average_loss:.4f}')
-    logging.info(f'Average Accuracy: {average_accuracy * 100:.2f}%')
-
-    # Build and display the confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     logging.info(f'Confusion Matrix:\n{cm}')
 
-    return cm  # Return the confusion matrix if needed for further analysis
-
-def get_embeddings_file(file_path_and_label, chunk_size=50):
-    labels = []
+def generate_embeddings_file(file_path_and_label):
     file_path, label = file_path_and_label
-
-    logging.info(f"Processing file: {file_path}")
-
-    embeddings = []  # List to store chunks of arrays
-    labels = [label]  # List to store chunks of labels
-    
-    with open(file_path, 'r') as vector_file:
-        vector = []
-        for line in vector_file:
-            cleaned_str = line.replace('[', '').replace(']', '').strip()
-            for num in cleaned_str.split():
-                vector.append(float(num))
-
-            if len(vector) == 20:
-                embeddings.append(vector)
-                vector = []
-
-    if chunk_size == 0:
-        return np.array(embeddings), np.array(labels)
-    else:
-        # Split the sequence into smaller chunks of size `chunk_size`
-        chunks = split_sequence_into_chunks(embeddings, chunk_size)
-
-        if len(chunks[-1]) < chunk_size:
-            for i in range(chunk_size - len(chunks[-1])):
-                chunks[-1].append(np.zeros(8))
-        
-        return np.array(chunks), np.array(labels)
-    
-def split_sequence_into_chunks(sequence, chunk_size):
-    """Splits the input sequence into smaller chunks of size `chunk_size`."""
-    return [sequence[i:i + chunk_size] for i in range(0, len(sequence), chunk_size)]
-
-def generate_embeddings_batch(file_paths, model, max_length):
-    X_batch = []
-    y_batch = []
-    for i in range(0, len(file_paths)):
-        logging.info(f'Running batch {str(i)}')
-        file_path_and_label = file_paths[i]
-        X, y = generate_embeddings_file(file_path_and_label, model, max_length, chunk_size = 0)
-        X_batch.append(X)
-        y_batch.append(y)
-
-    return np.array(X_batch), np.array(y_batch)
-
-def generate_embeddings_file(file_path_and_label, chunk_size=50):
-    labels = []
-    file_path, label = file_path_and_label
-    vectors = process_file(file_path)
-    labels.append(label)
-
-    if chunk_size == 0:
-        logging.info(f'Embeddings: {np.array(vectors).shape}')
-        logging.info(f'Labels: {np.array(labels).shape}')
-        return np.array(vectors), np.array(labels)
-    else:
-        chunks = split_sequence_into_chunks(vectors, chunk_size)
-
-        if len(chunks[-1]) < chunk_size:
-            for i in range(chunk_size - len(chunks[-1])):
-                chunks[-1].append(np.zeros(8))
-        
-        logging.info(f'Chunks: {np.array(chunks).shape}')
-        logging.info(f'Labels: {np.array(labels).shape}')
-        # Return the padded chunks as the final input
-        return np.array(chunks), np.array(labels)
-
-def generate_embedding_for_app(app_tokenized_instructions, model, max_length=50, chunk_size=50):
-    embeddings = []
-    
-    # Generate embeddings for the instructions
-    for instruction in app_tokenized_instructions:
-        token = instruction[0]
-        if token in model.wv:
-            embeddings.append(model.wv[token])
-        else:
-            embeddings.append(np.zeros(model.vector_size))
-
-    if chunk_size == 0:
-        return np.array(embeddings)
-    else:
-        # Split the sequence into smaller chunks of size `chunk_size`
-        chunks = split_sequence_into_chunks(embeddings, chunk_size)
-
-        if len(chunks[-1]) < chunk_size:
-            for i in range(chunk_size - len(chunks[-1])):
-                chunks[-1].append(np.zeros(model.vector_size))
-        
-        # Return the padded chunks as the final input
-        return np.array(chunks)
-
-def process_file(path):
-    application, extension = os.path.splitext(os.path.basename(path))
-    if extension == '.zip':
-        with tempfile.TemporaryDirectory() as temp_dir:
-            with zipfile.ZipFile(path, 'r') as zip_ref:
-                zip_ref.extractall(temp_dir)
-
-            for temp_file in os.listdir(temp_dir):
-                temp_root, temp_extension = os.path.splitext(temp_file)
-                file_path = os.path.join(temp_dir, temp_file)
-                if temp_extension == '.txt':
-                    return Preprocessor().clean_assembly_file(file_path)
+    # Simulating embedding generation with dummy data for this example
+    vectors = np.random.rand(5, 8)  # Replace with actual data
+    return vectors, label
 
 if __name__ == "__main__":
     logging.info("Running")

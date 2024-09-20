@@ -10,6 +10,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     tzdata \
     python3-pip \
+    python3-venv \
     gcc \
     libpq5 \
     libpq-dev \

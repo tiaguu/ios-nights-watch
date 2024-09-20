@@ -1,3 +1,13 @@
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from the .env file
+load_dotenv()
+
+print('HERE')
+print(os.getenv('HSA_OVERRIDE_GFX_VERSION'))
+print(os.getenv('HSA_ENABLE_SDMA'))
+
 import logging
 import argparse
 import os

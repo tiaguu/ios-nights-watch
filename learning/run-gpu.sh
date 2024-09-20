@@ -26,7 +26,7 @@ docker run -d \
   --device=/dev/dri \
   --group-add video \
   -e LD_LIBRARY_PATH=/opt/rocm/lib \
-  -e HSA_OVERRIDE_GFX_VERSION=10.1.0 \ 
+  -e HSA_OVERRIDE_GFX_VERSION=10.1.0 \  # Add the environment variable here
   $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
 
 # Show logs

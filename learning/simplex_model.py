@@ -32,7 +32,7 @@ class LSTMModel(nn.Module):
 
 def main():
     print("HERE")
-    
+
     # Set up logging
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(torch.cuda.current_device())
@@ -128,4 +128,5 @@ def main():
 #     vectors = np.random.rand(5, 8)  # Replace with actual data
 #     return vectors, label
 
+print("HERE")
 main()

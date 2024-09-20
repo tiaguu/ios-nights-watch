@@ -6,8 +6,8 @@ import zipfile
 from preprocess import Preprocessor
 import numpy as np
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
 import re

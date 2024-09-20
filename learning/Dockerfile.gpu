@@ -41,7 +41,7 @@ RUN python3.10 -m venv /app/venv
 
 # Activate virtual environment and install PyTorch with ROCm support
 RUN /app/venv/bin/pip install --upgrade pip \
-    && /app/venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2
+    && /app/venv/bin/pip install torch torchvision torchaudio --index-url --index-url https://download.pytorch.org/whl/rocm
 
 # Copy and install Python dependencies
 COPY requirements.txt .

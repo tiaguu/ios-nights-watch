@@ -29,9 +29,12 @@ RUN apt-get install -y ./amdgpu-install_6.2.60200-1_all.deb
 RUN apt-get update
 RUN apt-get install -y rocm
 
-# Install Python dependencies
+# Set up Python virtual environment
+RUN python3 -m venv /app/venv
+
+# Activate virtual environment and install Python dependencies
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .

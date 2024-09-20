@@ -2,7 +2,7 @@
 
 # Load environment variables from .env file
 if [ -f .env ]; then
-    export $(cat .env | sed 's/#.*//g' | xargs)
+    export $(grep -v '^#' .env | xargs)
 fi
 
 # Define the image and container names
@@ -18,12 +18,12 @@ docker rm $CONTAINER_NAME 2>/dev/null
 echo "Building Docker image..."
 docker build -t $IMAGE_NAME -f $DOCKERFILE_NAME . || { echo "Failed to build Docker image"; exit 1; }
 
-# Run the Docker container with GPU support
+# Run the Docker container with GPU support and set environment variables
 echo "Running Docker container with GPU support..."
 docker run -d \
   --name $CONTAINER_NAME \
-  --gpus all \  # Ensure that GPU is available
-  -e LD_LIBRARY_PATH=/opt/rocm/lib:$LD_LIBRARY_PATH \  # Set the environment variable
+  --gpus all \
+  -e LD_LIBRARY_PATH=/opt/rocm/lib \
   $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
 
 # Show logs

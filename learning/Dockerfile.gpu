@@ -3,7 +3,7 @@ FROM python:3.9-slim
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies and ROCm libraries
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq5 \
@@ -13,11 +13,14 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Add the ROCm repository and GPG key using the new method (apt-key deprecated)
+# Add the ROCm repository and GPG key using the correct method
 RUN mkdir -p /etc/apt/keyrings \
-    && curl -sSL https://repo.radeon.com/rocm/rocm.gpg.key | tee /etc/apt/keyrings/rocm-archive-keyring.gpg > /dev/null \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm-archive-keyring.gpg] http://repo.radeon.com/rocm/apt/5.3/ focal main" | tee /etc/apt/sources.list.d/rocm.list \
-    && apt-get update && apt-get install -y \
+    && curl -sSL https://repo.radeon.com/rocm/rocm.gpg.key | tee /etc/apt/keyrings/rocm-archive-keyring.gpg \
+    && gpg --no-default-keyring --keyring /etc/apt/keyrings/rocm-archive-keyring.gpg --list-keys \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm-archive-keyring.gpg] http://repo.radeon.com/rocm/apt/5.3/ focal main" | tee /etc/apt/sources.list.d/rocm.list
+
+# Install ROCm libraries
+RUN apt-get update && apt-get install -y \
     rocm-libs rocm-dev \
     && apt-get clean
 

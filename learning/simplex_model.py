@@ -31,6 +31,8 @@ class LSTMModel(nn.Module):
         return self.sigmoid(out)
 
 def main():
+    print("HERE")
+    
     # Set up logging
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(torch.cuda.current_device())

@@ -118,8 +118,9 @@ def get_vectors_from_url(url):
     response = requests.get(url)
 
     if response.status_code == 200:
-        # Print the content of the file
-        logging.info(response.text)
+        plain_text = response.text
+        for line in plain_text.split('\n'):
+            logging.info(line)
     else:
         logging.info(f"Failed to retrieve the file. Status code: {response.status_code}")
         return []

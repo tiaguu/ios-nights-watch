@@ -31,7 +31,12 @@ class LSTMModel(nn.Module):
         return self.sigmoid(out)
 
 def main():
-    print("HERE")
+    # Logging configuration
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[stream_handler])
 
     # Set up logging
     if torch.cuda.is_available():
@@ -44,12 +49,6 @@ def main():
     else:
         logging.info("No compatible GPU found. Using CPU.")
 
-#     # Logging configuration
-#     stream_handler = logging.StreamHandler()
-#     stream_handler.setLevel(logging.INFO)
-#     logging.basicConfig(level=logging.DEBUG,
-#                         format='%(asctime)s - %(levelname)s - %(message)s',
-#                         handlers=[stream_handler])
 
 #     parser = argparse.ArgumentParser()
 #     args = parser.parse_args()

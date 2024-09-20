@@ -9,9 +9,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     tzdata \
-    python3.10 \
-    python3-pip \
-    python3-venv \
+    software-properties-common \
     gcc \
     libpq5 \
     libpq-dev \
@@ -20,25 +18,28 @@ RUN apt-get update && apt-get install -y \
     curl \
     rsync \
     dialog \
+    && add-apt-repository -y ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y python3.10 python3.10-venv python3.10-dev python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Set timezone (optional, modify as needed)
-RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+# # Set timezone (optional, modify as needed)
+# RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 
-# RUN usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
-RUN wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
-RUN apt-get install -y ./amdgpu-install_6.2.60200-1_all.deb
-RUN apt-get update
-RUN apt-get install -y rocm
+# # RUN usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
+# RUN wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
+# RUN apt-get install -y ./amdgpu-install_6.2.60200-1_all.deb
+# RUN apt-get update
+# RUN apt-get install -y rocm
 
-# Set up Python virtual environment
+# Set up Python 3.10 virtual environment
 RUN python3.10 -m venv /app/venv
 
 # Download the TensorFlow ROCm .whl file and install it
-RUN wget https://files.pythonhosted.org/packages/2b/d6/49ce4095b9023a09e43be71b2e4ceb919151e486635659af56371141a0fd/tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
-RUN /app/venv/bin/pip install tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
+RUN wget https://files.pythonhosted.org/packages/2b/d6/49ce4095b9023a09e43be71b2e4ceb919151e486635659af56371141a0fd/tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl \
+    && /app/venv/bin/pip install tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
 
-# Activate virtual environment and install Python dependencies
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 

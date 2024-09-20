@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 # Set the environment variable to prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
 RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 
 # RUN usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
-RUN wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
-RUN apt-get install -y ./amdgpu-install_6.2.60200-1_all.deb
+RUN wget https://repo.radeon.com/amdgpu-install/6.1/ubuntu/jammy/amdgpu-install_6.1.60100-1_all.deb
+RUN apt-get install -y ./amdgpu-install_6.1.60100-1_all.deb
 RUN apt-get update
 RUN apt-get install -y rocm
 
@@ -38,6 +38,8 @@ RUN python3.10 -m venv /app/venv
 # # Download the TensorFlow ROCm .whl file and install it
 # RUN wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.2/tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl \
 #     && /app/venv/bin/pip install tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl
+
+RUN /app/venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
 
 # Copy and install Python dependencies
 COPY requirements.txt .

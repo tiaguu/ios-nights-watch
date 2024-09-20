@@ -9,8 +9,10 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     tzdata \
+    python3.10 \
     python3-pip \
-    python3-venv \
+    python3.10-venv \
+    python3.10-dev \
     gcc \
     libpq5 \
     libpq-dev \
@@ -31,7 +33,11 @@ RUN apt-get update
 RUN apt-get install -y rocm
 
 # Set up Python virtual environment
-RUN python3 -m venv /app/venv
+RUN python3.10 -m venv /app/venv
+
+# Download the TensorFlow ROCm .whl file and install it
+RUN wget https://files.pythonhosted.org/packages/2b/d6/49ce4095b9023a09e43be71b2e4ceb919151e486635659af56371141a0fd/tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
+RUN /app/venv/bin/pip install tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
 
 # Activate virtual environment and install Python dependencies
 COPY requirements.txt .
@@ -44,4 +50,4 @@ COPY . .
 EXPOSE 8000
 
 # Start the application
-CMD ["python3", "simplex_model.py"]
+CMD ["/app/venv/bin/python", "simplex_model.py"]

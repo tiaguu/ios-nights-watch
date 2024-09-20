@@ -36,8 +36,8 @@ RUN apt-get install -y rocm
 RUN python3.10 -m venv /app/venv
 
 # Download the TensorFlow ROCm .whl file and install it
-RUN wget https://files.pythonhosted.org/packages/2b/d6/49ce4095b9023a09e43be71b2e4ceb919151e486635659af56371141a0fd/tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl \
-    && /app/venv/bin/pip install tensorflow_rocm-2.14.0.600-cp310-cp310-manylinux2014_x86_64.whl
+RUN wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.2/tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl \
+    && /app/venv/bin/pip install tensorflow_rocm-2.16.1-cp310-cp310-manylinux_2_28_x86_64.whl
 
 # Copy and install Python dependencies
 COPY requirements.txt .

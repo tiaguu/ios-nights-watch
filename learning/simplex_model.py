@@ -41,12 +41,9 @@ def main():
     # Set up logging
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(torch.cuda.current_device())
-        logging.info(f"CUDA Available. GPU in use: {gpu_name}")
+        logging.info(f"GPU Available. GPU in use: {gpu_name}")
     elif torch.backends.mps.is_available():  # For Apple M1/M2 with Metal Performance Shaders
         logging.info("MPS (Metal Performance Shaders) is available on macOS.")
-    elif torch.backends.hip.is_available():  # Check for AMD GPUs with ROCm
-        gpu_name = torch.cuda.get_device_name(torch.cuda.current_device())
-        logging.info(f"ROCm Available. GPU in use: {gpu_name}")
     else:
         logging.info("No compatible GPU found. Using CPU.")
 

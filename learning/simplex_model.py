@@ -60,6 +60,8 @@ def main():
     logging.info('Separated training and testing')
     logging.info(f'Training: {len(train_paths)}')
     logging.info(f'Testing: {len(test_paths)}')
+    logging.info(f'Training: {(train_paths)}')
+    logging.info(f'Testing: {(test_paths)}')
 
 #     # Model hyperparameters
 #     input_size = 8

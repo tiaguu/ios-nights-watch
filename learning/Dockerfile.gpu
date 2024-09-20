@@ -13,11 +13,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Add the ROCm repository and GPG key using the correct method
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -sSL https://repo.radeon.com/rocm/rocm.gpg.key | tee /etc/apt/keyrings/rocm-archive-keyring.gpg \
-    && gpg --no-default-keyring --keyring /etc/apt/keyrings/rocm-archive-keyring.gpg --list-keys \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm-archive-keyring.gpg] http://repo.radeon.com/rocm/apt/5.3/ focal main" | tee /etc/apt/sources.list.d/rocm.list
+# Add the ROCm repository and GPG key
+RUN wget -qO - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - \
+    && echo "deb [arch=amd64] http://repo.radeon.com/rocm/apt/5.3/ ubuntu main" | tee /etc/apt/sources.list.d/rocm.list
 
 # Install ROCm libraries
 RUN apt-get update && apt-get install -y \

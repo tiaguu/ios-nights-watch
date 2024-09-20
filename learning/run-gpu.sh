@@ -15,7 +15,17 @@ docker stop $CONTAINER_NAME 2>/dev/null
 docker rm $CONTAINER_NAME 2>/dev/null
 
 # Build the Docker image
-docker build -t $IMAGE_NAME -f $DOCKERFILE_NAME .
+echo "Building Docker image..."
+docker build -t $IMAGE_NAME -f $DOCKERFILE_NAME . || { echo "Failed to build Docker image"; exit 1; }
 
-# Run the Docker container
-docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+# Run the Docker container with GPU support
+echo "Running Docker container with GPU support..."
+docker run -d \
+  --name $CONTAINER_NAME \
+  --gpus all \  # Ensure that GPU is available
+  -e LD_LIBRARY_PATH=/opt/rocm/lib:$LD_LIBRARY_PATH \  # Set the environment variable
+  $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
+
+# Show logs
+echo "Docker container is running. Showing logs..."
+docker logs -f $CONTAINER_NAME

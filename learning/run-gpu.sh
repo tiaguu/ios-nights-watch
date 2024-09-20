@@ -26,6 +26,7 @@ docker run -d \
   --device=/dev/dri \
   --group-add video \
   -e HSA_OVERRIDE_GFX_VERSION=10.1.0 \
+  -e HSA_ENABLE_SDMA=0 \
   -e LD_LIBRARY_PATH=/opt/rocm/lib \
   $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
 

@@ -1,21 +1,16 @@
 from dotenv import load_dotenv
 import os
-
-# Load environment variables from the .env file
-load_dotenv()
-
-import logging
-import argparse
-import os
-import tempfile
-import zipfile
-from preprocess import Preprocessor
-import numpy as np
-from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
+import numpy as np
+import logging
+import requests
+
+# Load environment variables from the .env file
+load_dotenv()
 
 # PyTorch model definition
 class LSTMModel(nn.Module):
@@ -25,9 +20,14 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
         self.sigmoid = nn.Sigmoid()  # For binary classification
 
-    def forward(self, x):
-        out, _ = self.lstm(x)
-        out = self.fc(out[:, -1, :])  # Taking the output from the last time step
+    def forward(self, x, lengths):
+        # Pack the padded sequence
+        packed_input = nn.utils.rnn.pack_padded_sequence(x, lengths, batch_first=True, enforce_sorted=False)
+        packed_output, (hidden, cell) = self.lstm(packed_input)
+        
+        # We only care about the output of the last time step
+        out = hidden[-1]  # Take the hidden state of the last LSTM layer
+        out = self.fc(out)
         return self.sigmoid(out)
 
 def main():
@@ -37,9 +37,6 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[stream_handler])
-
-    parser = argparse.ArgumentParser()
-    args = parser.parse_args()
 
     # Set up logging
     if torch.cuda.is_available():
@@ -62,7 +59,7 @@ def main():
     logging.info(f'Testing: {len(test_paths)}')
 
     # Model hyperparameters
-    input_size = 8
+    input_size = 8  # Each input vector has 8 features
     hidden_size = 64
     output_size = 1  # Binary classification
     max_length = 5
@@ -73,57 +70,58 @@ def main():
     logging.info(f'Device: {device}')
     model.to(device)
 
-#     # Define loss and optimizer
-#     criterion = nn.BCELoss()  # Binary Cross Entropy for binary classification
-#     optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # Define loss and optimizer
+    criterion = nn.BCELoss()  # Binary Cross Entropy for binary classification
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-#     # Dummy training loop (You can replace it with actual data loading)
-#     for epoch in range(2):  # Replace with actual number of epochs
-#         logging.info(f'Starting epoch {epoch + 1}')
-#         for i, train_path in enumerate(train_paths):
-#             X_train, y_train = generate_embeddings_file(train_path)
-#             X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
-#             y_train = torch.tensor(y_train, dtype=torch.float32).to(device)
+    # Dummy training loop (You can replace it with actual data loading)
+    for epoch in range(2):  # Replace with actual number of epochs
+        logging.info(f'Starting epoch {epoch + 1}')
+        # Simulate data loading for variable-length sequences
+        X_train, y_train, lengths = generate_variable_length_embeddings(urls_data = train_paths)
+        X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
+        y_train = torch.tensor(y_train, dtype=torch.float32).to(device)
 
-#             # Forward pass
-#             outputs = model(X_train)
-#             loss = criterion(outputs.squeeze(), y_train)
-            
-#             # Backward and optimize
-#             optimizer.zero_grad()
-#             loss.backward()
-#             optimizer.step()
+        # Forward pass
+        outputs = model(X_train, lengths)
+        loss = criterion(outputs.squeeze(), y_train)
+        
+        # Backward and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-#             logging.info(f'Epoch [{epoch+1}], Batch [{i+1}/{len(train_paths)}], Loss: {loss.item():.4f}')
+        logging.info(f'Epoch [{epoch+1}], Loss: {loss.item():.4f}')
     
-#     logging.info('Training complete')
-#     test_model(test_paths, model)
+    logging.info('Training complete')
 
-# def test_model(test_paths, model):
-#     model.eval()  # Set model to evaluation mode
-#     accuracies = []
-#     y_true = []
-#     y_pred = []
+def generate_variable_length_embeddings(urls_data, batch_size = 16, max_seq_length = 150, input_size = 8):
+    data = []
+    for url in urls_data:
+        get_vectors_from_url(url = url)
 
-#     with torch.no_grad():
-#         for test_sample in test_paths:
-#             X_test, y_test = generate_embeddings_file(test_sample)
-#             X_test = torch.tensor(X_test, dtype=torch.float32)
-#             y_test = torch.tensor(y_test, dtype=torch.float32)
+    # # Simulating different lengths for each sequence
+    # lengths = np.random.randint(1, max_seq_length + 1, size=batch_size)
+    # data = [np.random.rand(length, input_size) for length in lengths]
 
-#             outputs = model(X_test)
-#             predicted = (outputs > 0.5).float()  # Binary classification threshold
-#             y_true.append(y_test.item())
-#             y_pred.append(predicted.item())
+    # # Pad sequences to the same length
+    # padded_data = np.zeros((batch_size, max_seq_length, input_size))
+    # for i, seq in enumerate(data):
+    #     padded_data[i, :len(seq), :] = seq
 
-#     cm = confusion_matrix(y_true, y_pred)
-#     logging.info(f'Confusion Matrix:\n{cm}')
+    # # Dummy binary labels
+    # labels = np.random.randint(0, 2, size=batch_size)
+    
+    # return padded_data, labels, lengths
 
-# def generate_embeddings_file(file_path_and_label):
-#     file_path, label = file_path_and_label
-#     # Simulating embedding generation with dummy data for this example
-#     vectors = np.random.rand(5, 8)  # Replace with actual data
-#     return vectors, label
+def get_vectors_from_url(url):
+    response = requests.get(url)
 
-print("HERE")
+    if response.status_code == 200:
+        # Print the content of the file
+        logging.info(response.text)
+    else:
+        logging.info(f"Failed to retrieve the file. Status code: {response.status_code}")
+        return []
+
 main()

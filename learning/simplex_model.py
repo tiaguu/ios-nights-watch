@@ -4,10 +4,6 @@ import os
 # Load environment variables from the .env file
 load_dotenv()
 
-print('HERE')
-print(os.getenv('HSA_OVERRIDE_GFX_VERSION'))
-print(os.getenv('HSA_ENABLE_SDMA'))
-
 import logging
 import argparse
 import os
@@ -130,6 +126,4 @@ def main():
 #     vectors = np.random.rand(5, 8)  # Replace with actual data
 #     return vectors, label
 
-if __name__ == "__main__":
-    logging.info("Running")
-    main()
+main()

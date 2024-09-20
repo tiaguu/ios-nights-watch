@@ -60,19 +60,18 @@ def main():
     logging.info('Separated training and testing')
     logging.info(f'Training: {len(train_paths)}')
     logging.info(f'Testing: {len(test_paths)}')
-    logging.info(f'Training: {(train_paths)}')
-    logging.info(f'Testing: {(test_paths)}')
 
-#     # Model hyperparameters
-#     input_size = 8
-#     hidden_size = 64
-#     output_size = 1  # Binary classification
-#     max_length = 5
+    # Model hyperparameters
+    input_size = 8
+    hidden_size = 64
+    output_size = 1  # Binary classification
+    max_length = 5
 
-#     # Initialize the model
-#     model = LSTMModel(input_size, hidden_size, output_size)
-#     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#     model.to(device)
+    # Initialize the model
+    model = LSTMModel(input_size, hidden_size, output_size)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    logging.info(f'Device: {device}')
+    model.to(device)
 
 #     # Define loss and optimizer
 #     criterion = nn.BCELoss()  # Binary Cross Entropy for binary classification

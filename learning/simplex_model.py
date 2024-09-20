@@ -38,6 +38,9 @@ def main():
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         handlers=[stream_handler])
 
+    parser = argparse.ArgumentParser()
+    args = parser.parse_args()
+
     # Set up logging
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(torch.cuda.current_device())
@@ -47,20 +50,16 @@ def main():
     else:
         logging.info("No compatible GPU found. Using CPU.")
 
+    download_url = 'http://95.168.166.236:8000/download/opcodes'
+    goodware_urls = [f'{download_url}/goodware/{x}' for x in range(10)]
+    malware_urls = [f'{download_url}/malware/{x}' for x in range(10)]
+    urls = goodware_urls + malware_urls
 
-#     parser = argparse.ArgumentParser()
-#     args = parser.parse_args()
-
-#     download_url = 'http://95.168.166.236:8000/download/opcodes'
-#     goodware_urls = [f'{download_url}/goodware/{x}' for x in range(10)]
-#     malware_urls = [f'{download_url}/malware/{x}' for x in range(10)]
-#     urls = goodware_urls + malware_urls
-
-#     # Train/test split
-#     train_paths, test_paths = train_test_split(urls, test_size=0.2, random_state=42)
-#     logging.info('Separated training and testing')
-#     logging.info(f'Training: {len(train_paths)}')
-#     logging.info(f'Testing: {len(test_paths)}')
+    # Train/test split
+    train_paths, test_paths = train_test_split(urls, test_size=0.2, random_state=42)
+    logging.info('Separated training and testing')
+    logging.info(f'Training: {len(train_paths)}')
+    logging.info(f'Testing: {len(test_paths)}')
 
 #     # Model hyperparameters
 #     input_size = 8

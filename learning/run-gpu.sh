@@ -22,7 +22,9 @@ docker build -t $IMAGE_NAME -f $DOCKERFILE_NAME . || { echo "Failed to build Doc
 echo "Running Docker container with GPU support..."
 docker run -d \
   --name $CONTAINER_NAME \
-  --gpus all \
+  --device=/dev/kfd \
+  --device=/dev/dri \
+  --group-add video \
   -e LD_LIBRARY_PATH=/opt/rocm/lib \
   $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
 

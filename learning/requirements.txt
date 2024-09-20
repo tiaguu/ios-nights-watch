@@ -5,3 +5,6 @@ pandas==2.0.3
 python-dotenv
 # keras==2.15.0
 # tensorflow-rocm==2.14.0.600
+torch==2.0.1+rocm6.2 
+torchvision==0.15.2+rocm6.2 
+torchaudio==2.0.2+rocm6.2

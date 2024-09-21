@@ -93,7 +93,7 @@ def main():
     for epoch in range(2):  # Replace with actual number of epochs
         logging.info(f'Starting epoch {epoch + 1}')
         # Simulate data loading for variable-length sequences
-        X_train, y_train, lengths = generate_variable_length_embeddings(urls_data = train_paths)
+        X_train, y_train, lengths = generate_variable_length_embeddings(urls_data = train_urls_data)
         X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
         y_train = torch.tensor(y_train, dtype=torch.float32).to(device)
 

@@ -50,13 +50,20 @@ def main():
     download_url = 'http://95.168.166.236:8000/download/opcodes'
     goodware_urls = [f'{download_url}/goodware/{x}' for x in range(10)]
     malware_urls = [f'{download_url}/malware/{x}' for x in range(10)]
-    urls = goodware_urls + malware_urls
+    
+    urls = {}
+    for goodware_url in goodware_urls:
+        urls[goodware_url] = 0
+    for malware_url in malware_urls:
+        urls[malware_url] = 1
 
     # Train/test split
     train_paths, test_paths = train_test_split(urls, test_size=0.2, random_state=42)
     logging.info('Separated training and testing')
     logging.info(f'Training: {len(train_paths)}')
     logging.info(f'Testing: {len(test_paths)}')
+    logging.info(f'Training: {(train_paths)}')
+    logging.info(f'Testing: {(test_paths)}')
 
     # Model hyperparameters
     input_size = 8  # Each input vector has 8 features
@@ -97,8 +104,13 @@ def main():
 
 def generate_variable_length_embeddings(urls_data, batch_size = 16, max_seq_length = 150, input_size = 8):
     data = []
-    for url in urls_data:
-        get_vectors_from_url(url = url)
+    labels = []
+    for url in urls_data.keys():
+        vectors = get_vectors_from_url(url = url)
+        logging.info(vectors)
+        data.append(vectors)
+        logging.info(urls_data[url])
+        labels.append(urls_data[url])
 
     # # Simulating different lengths for each sequence
     # lengths = np.random.randint(1, max_seq_length + 1, size=batch_size)
@@ -118,6 +130,7 @@ def get_vectors_from_url(url):
     response = requests.get(url)
 
     if response.status_code == 200:
+        vectors = []
         plain_text = response.text
         for line in plain_text.split('\n'):
             if len(line) > 0:
@@ -128,8 +141,10 @@ def get_vectors_from_url(url):
 
                 if key is not None:
                     vector[key] = 1.0
-                else:
-                    logging.info(vector)
+
+                vectors.append(vector)
+
+        return vectors
     else:
         logging.info(f"Failed to retrieve the file. Status code: {response.status_code}")
         return []

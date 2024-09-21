@@ -124,11 +124,11 @@ def generate_variable_length_embeddings(urls_data, batch_size = 16, max_seq_leng
             # If the chunk is smaller than max_seq_length, optionally pad (if padding is needed)
             if len(chunk) < max_seq_length:
                 # You can pad the sequence with zeros if necessary
-                padding = [[0] * input_size] * (max_seq_length - len(chunk))
+                padding = [[0.0] * input_size] * (max_seq_length - len(chunk))
                 chunk.extend(padding)
 
             data.append(chunk)
-            logging.info(chunk)
+            logging.info(len(chunk))
             labels.append(urls_data[url])
             logging.info(urls_data[url])
 

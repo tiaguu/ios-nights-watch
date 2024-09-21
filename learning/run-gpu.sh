@@ -25,8 +25,10 @@ docker run -d \
   --device=/dev/kfd \
   --device=/dev/dri \
   --group-add video \
+  -e PYTORCH_ROCM_ARCH="gfx1011" \
   -e HSA_OVERRIDE_GFX_VERSION=10.1.1 \
-  -e HSA_ENABLE_SDMA=0 \
+  -e HIP_VISIBLE_DEVICES=0 \
+  -e ROCM_PATH=/opt/rocm \
   -e LD_LIBRARY_PATH=/opt/rocm/lib \
   $IMAGE_NAME || { echo "Failed to start Docker container"; exit 1; }
 

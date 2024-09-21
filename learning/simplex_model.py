@@ -58,7 +58,7 @@ def main():
         urls[malware_url] = 1
 
     # Train/test split
-    train_urls, test_urls = train_test_split(urls.keys(), test_size=0.2, random_state=42)
+    train_urls, test_urls = train_test_split(list(urls.keys()), test_size=0.2, random_state=42)
     logging.info('Separated training and testing')
     logging.info(f'Training: {len(train_urls)}')
     logging.info(f'Testing: {len(test_urls)}')

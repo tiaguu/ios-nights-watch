@@ -47,6 +47,9 @@ def main():
     else:
         logging.info("No compatible GPU found. Using CPU.")
 
+    logging.info(f'Torch version: {torch.__version__}')  # Check PyTorch version
+    logging.info(f'ROCm version: {torch.version.hip}')  # Check ROCm version
+
     download_url = 'http://95.168.166.236:8000/download/opcodes'
     goodware_urls = [f'{download_url}/goodware/{x}' for x in range(10)]
     malware_urls = [f'{download_url}/malware/{x}' for x in range(10)]

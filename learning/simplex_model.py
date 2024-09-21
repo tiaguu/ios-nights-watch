@@ -115,10 +115,22 @@ def generate_variable_length_embeddings(urls_data, batch_size = 16, max_seq_leng
     labels = []
     for url in urls_data.keys():
         vectors = get_vectors_from_url(url = url)
-        logging.info(vectors)
-        data.append(vectors)
-        logging.info(urls_data[url])
-        labels.append(urls_data[url])
+
+        # Split vectors into chunks of max_seq_length
+        for i in range(0, len(vectors), max_seq_length):
+            # Extract the chunk from the original vectors
+            chunk = vectors[i:i + max_seq_length]
+            
+            # If the chunk is smaller than max_seq_length, optionally pad (if padding is needed)
+            if len(chunk) < max_seq_length:
+                # You can pad the sequence with zeros if necessary
+                padding = [[0] * input_size] * (max_seq_length - len(chunk))
+                chunk.extend(padding)
+
+            data.append(chunk)
+            logging.info(chunk)
+            labels.append(urls_data[url])
+            logging.info(urls_data[url])
 
     # # Simulating different lengths for each sequence
     # lengths = np.random.randint(1, max_seq_length + 1, size=batch_size)

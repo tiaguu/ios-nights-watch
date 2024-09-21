@@ -1,3 +1,8 @@
+from os import putenv
+
+putenv("PYTORCH_ROCM_ARCH", "gfx1011")
+putenv("HSA_OVERRIDE_GFX_VERSION", "10.1.1")
+
 from dotenv import load_dotenv
 import os
 import torch

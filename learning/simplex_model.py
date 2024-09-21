@@ -121,9 +121,34 @@ def get_vectors_from_url(url):
         plain_text = response.text
         for line in plain_text.split('\n'):
             if len(line) > 0:
-                logging.info(line)
+                opcode = line.strip()
+
+                key = find_opcode_key(opcode)
+                vector = [0.0 for x in range(8)]
+
+                if key is not None:
+                    vector[key] = 1.0
+
+                logging.info(vector)
     else:
         logging.info(f"Failed to retrieve the file. Status code: {response.status_code}")
         return []
+    
+def find_opcode_key(opcode_value):
+    opcodes = {
+        0 : ['b', 'bl', 'bx', 'blx'], # Unconditional Branches
+        1 : ['b.eq', 'b.ne', 'b.lt', 'b.gt', 'b.le', 'b.ge', 'b.hi', 'b.lo', 'b.pl', 'b.mi', 'b.vs', 'b.vc', 'b.cs', 'b.cc', 'b.al', 'b.nv'], # Conditional Branches
+        2 : ['cbz', 'cbnz'], # Compare and Branch
+        3 : ['tbz', 'tbnz'], # Test and Branch
+        4 : ['ret', 'eret'], # Return Instructions
+        5 : ['svc', 'hvc', 'smc', 'brk', 'hlt'], # Exception Generation
+        6 : ['br', 'blr', 'braa', 'brab', 'retab'], # Indirect Branching
+        7 : ['nop', 'yield', 'wfe', 'wfi', 'sev', 'sevl', 'isb', 'dmb', 'dsb'] # Hints
+    }
+
+    for key, values in opcodes.items():
+        if opcode_value in values:
+            return key
+    return None
 
 main()

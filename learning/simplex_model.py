@@ -128,8 +128,8 @@ def get_vectors_from_url(url):
 
                 if key is not None:
                     vector[key] = 1.0
-
-                logging.info(vector)
+                else:
+                    logging.info(vector)
     else:
         logging.info(f"Failed to retrieve the file. Status code: {response.status_code}")
         return []

@@ -58,12 +58,20 @@ def main():
         urls[malware_url] = 1
 
     # Train/test split
-    train_paths, test_paths = train_test_split(urls, test_size=0.2, random_state=42)
+    train_urls, test_urls = train_test_split(urls.keys(), test_size=0.2, random_state=42)
     logging.info('Separated training and testing')
-    logging.info(f'Training: {len(train_paths)}')
-    logging.info(f'Testing: {len(test_paths)}')
-    logging.info(f'Training: {(train_paths)}')
-    logging.info(f'Testing: {(test_paths)}')
+    logging.info(f'Training: {len(train_urls)}')
+    logging.info(f'Testing: {len(test_urls)}')
+
+    train_urls_data = {}
+    for url in train_urls:
+        train_urls_data[url] = urls[url]
+    logging.info(f'Training: {(train_urls_data)}')
+
+    test_urls_data = {}
+    for url in test_urls:
+        test_urls_data[url] = urls[url]
+    logging.info(f'Testing: {(test_urls_data)}')
 
     # Model hyperparameters
     input_size = 8  # Each input vector has 8 features
